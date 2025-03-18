@@ -110,7 +110,79 @@
 
         const tradeDataArray = [
             
-            
+        
+  {
+    "Ativo": "WDOFUT",
+    "Abertura": "10/03/2025 09:15:00",
+    "Fechamento": "10/03/2025 09:30:00",
+    "Tempo Operacao": "15min",
+    "Qtd Compra": "3",
+    "Qtd Venda": "3",
+    "Lado": "C",
+    "Preco Compra": "5.792.00",
+    "Preco Venda": "5.781.50",
+    "Preco de Mercado": "5.756.00",
+    "Medio": "Sim",
+    "Res. Intervalo": "-315.00",
+    "Res. Intervalo (%)": "-10.50",
+    "Numero Operacao": "251",
+    "Res. Operacao": "-315.00",
+    "Res. Operacao (%)": "-10.50",
+    "Drawdown": "-315.00",
+    "Ganho Max.": "0.00",
+    "Perda Max.": "0.00",
+    "TET": "25min",
+    "Total": "-19.380.00",
+    "total_investido": "171780.00"
+  },
+  {
+    "Ativo": "WDOFUT",
+    "Abertura": "10/03/2025 09:30:00",
+    "Fechamento": "10/03/2025 10:10:00",
+    "Tempo Operacao": "40min",
+    "Qtd Compra": "3",
+    "Qtd Venda": "3",
+    "Lado": "V",
+    "Preco Compra": "5.792.00",
+    "Preco Venda": "5.798.00",
+    "Preco de Mercado": "5.756.00",
+    "Medio": "Nao",
+    "Res. Intervalo": "180.00",
+    "Res. Intervalo (%)": "6.00",
+    "Numero Operacao": "252",
+    "Res. Operacao": "180.00",
+    "Res. Operacao (%)": "6.00",
+    "Drawdown": "180.00",
+    "Ganho Max.": "0.00",
+    "Perda Max.": "0.00",
+    "TET": "15min",
+    "Total": "-19.200.00",
+    "total_investido": "171780.00"
+  },
+  {
+    "Ativo": "WDOFUT",
+    "Abertura": "10/03/2025 10:10:00",
+    "Fechamento": "10/03/2025 10:45:00",
+    "Tempo Operacao": "35min",
+    "Qtd Compra": "3",
+    "Qtd Venda": "3",
+    "Lado": "C",
+    "Preco Compra": "5.798.00",
+    "Preco Venda": "5.795.50",
+    "Preco de Mercado": "5.756.00",
+    "Medio": "Sim",
+    "Res. Intervalo": "-75.00",
+    "Res. Intervalo (%)": "-2.50",
+    "Numero Operacao": "253",
+    "Res. Operacao": "-75.00",
+    "Res. Operacao (%)": "-2.50",
+    "Drawdown": "-75.00",
+    "Ganho Max.": "0.00",
+    "Perda Max.": "0.00",
+    "TET": "40min",
+    "Total": "-19.275.00",
+    "total_investido": "171780.00"
+  },
   {
     "Ativo": "WDOFUT",
     "Abertura": "11/03/2025 11:20:00",
@@ -919,6 +991,7 @@ function agruparPorData(tradeDataArray) {
         };
       }
       agrupado[dia].detalhes.push(`
+   <strong>Decisão do bot:</strong> Contra<br>   
   <strong>Abertura:</strong> ${op.Abertura}<br>
   <strong>Fechamento:</strong> ${op.Fechamento}<br>
   <strong>Preço Compra:</strong> ${op["Preco Compra"]}<br>
@@ -927,9 +1000,6 @@ function agruparPorData(tradeDataArray) {
   <strong>TET:</strong> ${op.TET}<br>
   <strong>Total Geral:</strong> ${op.Total}
 `);
-
-
-
     });
 
     Object.keys(agrupado).forEach(d => {
@@ -947,22 +1017,50 @@ function generateCards() {
     container.innerHTML = "";
 
     Object.keys(tradeData).forEach(date => {
-        const data = tradeData[date];
+        let totalInvestido = "";
+        let lucro = "";
+        let dayName = ""; // Nome fixo do dia (Terça, Quarta, Quinta, Sexta)
+
+        // Ajuste conforme seus valores fixos
+        if (date === "10/03/2025") {
+            dayName = "Segunda-feira";
+            totalInvestido = "1.105.110,00";
+            lucro = "199.015,00";
+        }
+       else if (date === "11/03/2025") {
+            dayName = "Terça-feira";
+            totalInvestido = "1.405.110,00";
+            lucro = "150.015,00";
+        } else if (date === "12/03/2025") {
+            dayName = "Quarta-feira";
+            totalInvestido = "2.277.975,00";
+            lucro = "259.455,00";
+        } else if (date === "13/03/2025") {
+            dayName = "Quinta-feira";
+            totalInvestido = "1.573.425,00";
+            lucro = "183.285,00";
+        } else if (date === "14/03/2025") {
+            dayName = "Sexta-feira";
+            totalInvestido = "517.680,00";
+            lucro = "57.015,00";
+        }
+
         const card = document.createElement("div");
         card.className = "card";
 
-        // Aqui adicionamos as linhas fixas de Lucro e Total Investido
         card.innerHTML = `
-            <h2><strong>Data: ${date}</strong></h2>
-            <p><strong>Total Investido:</strong> 517.680,00</p>
-             <p><strong>Lucro:</strong> 57.015,00</p>
+            <h2><strong>${dayName}</strong></h2>
+            <p><strong> Data:</strong> ${date}</p>
+            <p><strong>Total Investido:</strong> ${totalInvestido}</p>
+            <p><strong>Lucro:</strong> ${lucro}</p>
         `;
 
-        // Quando clicar, abre o modal
         card.onclick = () => openModal(date);
         container.appendChild(card);
     });
 }
+
+
 
     
  
