@@ -28,7 +28,7 @@
             border-radius: 8px;
             box-shadow: 0 4px 8px rgba(0,0,0,0.1);
             flex: 1;
-            min-width: 250px;
+            
             text-align: center;
         }
         .card h2 {
@@ -36,7 +36,7 @@
             font-size: 18px;
         }
         .chart-container {
-            width: 100%;
+            
             margin-top: 20px;
             background: #fff;
             padding: 20px;
@@ -76,22 +76,32 @@
         </div>
         
         <div class="chart-container">
+            <h2>Gráfico de Total Investido</h2>
+            <canvas id="investedChart"></canvas>
+        </div>
+        
+        <div class="chart-container">
+            <h2>Gráfico de Perda e Ganho</h2>
+            <canvas id="profitLossChart"></canvas>
+        </div>
+        
+        <div class="chart-container">
             <h2>Lâmina de Decisão</h2>
             <p>Baseado na análise, recomenda-se manter a posição.</p>
         </div>
     </div>
 
     <script>
-        var ctx = document.getElementById('backtestChart').getContext('2d');
-        var backtestChart = new Chart(ctx, {
+        var ctxBacktest = document.getElementById('backtestChart').getContext('2d');
+        var backtestChart = new Chart(ctxBacktest, {
             type: 'line',
             data: {
                 labels: ['Jan', 'Fev', 'Mar', 'Abr', 'Mai'],
                 datasets: [{
                     label: 'Backtest',
                     data: [10, 15, 8, 12, 20],
-                    borderColor: 'blue',
-                    backgroundColor: 'rgba(0, 0, 255, 0.1)',
+                    borderColor: '#4A90E2',
+                    backgroundColor: 'rgba(74, 144, 226, 0.1)',
                     fill: true,
                     tension: 0.3
                 }]
@@ -104,6 +114,49 @@
                         beginAtZero: true,
                         suggestedMin: 0,
                         suggestedMax: 25
+                    }
+                }
+            }
+        });
+
+        var ctxInvested = document.getElementById('investedChart').getContext('2d');
+        var investedChart = new Chart(ctxInvested, {
+            type: 'bar',
+            data: {
+                labels: ['Jan', 'Fev', 'Mar', 'Abr', 'Mai'],
+                datasets: [{
+                    label: 'Total Investido',
+                    data: [40000, 42000, 45000, 47000, 50000],
+                    backgroundColor: 'rgba(100, 181, 246, 0.7)'
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false
+            }
+        });
+
+        var ctxProfitLoss = document.getElementById('profitLossChart').getContext('2d');
+        var profitLossChart = new Chart(ctxProfitLoss, {
+            type: 'bar',
+            data: {
+                labels: ['Jan', 'Fev', 'Mar', 'Abr', 'Mai'],
+                datasets: [{
+                    label: 'Ganho',
+                    data: [5, 8, 6, 7, 10],
+                    backgroundColor: 'rgba(76, 175, 80, 0.7)'
+                }, {
+                    label: 'Perda',
+                    data: [2, 3, 4, 2, 1],
+                    backgroundColor: 'rgba(244, 67, 54, 0.7)'
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                scales: {
+                    y: {
+                        beginAtZero: true
                     }
                 }
             }
