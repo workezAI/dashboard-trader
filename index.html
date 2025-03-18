@@ -17,9 +17,8 @@
             padding: 20px;
         }
         .dashboard {
-            display: flex;
-            flex-wrap: wrap;
-            justify-content: space-between;
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
             gap: 10px;
         }
         .card {
@@ -27,12 +26,32 @@
             padding: 20px;
             border-radius: 8px;
             box-shadow: 0 4px 8px rgba(0,0,0,0.1);
-            flex: 1;
             text-align: center;
+            cursor: pointer;
         }
-        .card h2 {
-            margin-bottom: 10px;
-            font-size: 18px;
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0,0,0,0.5);
+            justify-content: center;
+            align-items: center;
+        }
+        .modal-content {
+            background: #fff;
+            padding: 20px;
+            border-radius: 8px;
+            width: 60%;
+            max-width: 600px;
+        }
+        .close {
+            float: right;
+            font-size: 20px;
+            cursor: pointer;
         }
         .chart-container {
             margin-top: 20px;
@@ -41,143 +60,163 @@
             border-radius: 8px;
             box-shadow: 0 4px 8px rgba(0,0,0,0.1);
         }
-        canvas {
-            max-height: 300px;
+        .chart-container canvas {
+            width: 100% !important;
+            max-height: 400px;
         }
     </style>
 </head>
 <body>
     <div class="container">
         <h1>Dashboard de Backtest</h1>
-        
-        <!-- Painel Diário -->
-        <div class="dashboard">
-            <div class="card">
-                <h2>Terça-feira</h2>
-                <p><strong>Lucro: R$ 2.000</strong></p>
-                <p><strong>Total Investido: R$ 50.000</strong></p>
-                <p><strong>Backtest: +3.2%</strong></p>
-                <p><em>Decisão: Manter posição</em></p>
-            </div>
-            <div class="card">
-                <h2>Quarta-feira</h2>
-                <p><strong>Lucro: R$ 1.500</strong></p>
-                <p><strong>Total Investido: R$ 51.000</strong></p>
-                <p><strong>Backtest: +2.8%</strong></p>
-                <p><em>Decisão: Aumentar posição</em></p>
-            </div>
-            <div class="card">
-                <h2>Quinta-feira</h2>
-                <p><strong>Lucro: R$ 1.800</strong></p>
-                <p><strong>Total Investido: R$ 52.000</strong></p>
-                <p><strong>Backtest: +3.0%</strong></p>
-                <p><em>Decisão: Rebalancear carteira</em></p>
-            </div>
-            <div class="card">
-                <h2>Sexta-feira</h2>
-                <p><strong>Lucro: R$ 2.300</strong></p>
-                <p><strong>Total Investido: R$ 53.500</strong></p>
-                <p><strong>Backtest: +3.5%</strong></p>
-                <p><em>Decisão: Realizar parcial</em></p>
-            </div>
-        </div>
-        
-        <!-- Gráficos -->
+        <div class="dashboard" id="cards-container"></div>
         <div class="chart-container">
-            <h2>Gráfico de Backtest</h2>
-            <canvas id="backtestChart"></canvas>
-        </div>
-        
-        <div class="chart-container">
-            <h2>Gráfico de Total Investido</h2>
-            <canvas id="investedChart"></canvas>
-        </div>
-        
-        <div class="chart-container">
-            <h2>Gráfico de Perda e Ganho</h2>
-            <canvas id="profitLossChart"></canvas>
+            <h2>Gráfico de Resultados</h2>
+            <canvas id="resultsChart"></canvas>
         </div>
     </div>
-
+    
+    <div id="modal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeModal()">&times;</span>
+            <h2>Detalhes do Dia</h2>
+            <div id="modal-body"></div>
+        </div>
+    </div>
+    
     <script>
-        function getLast7Days() {
-            let dates = [];
-            let today = new Date();
-    
-            for (let i = 6; i >= 0; i--) { // Pegando os últimos 7 dias
-                let pastDate = new Date();
-                pastDate.setDate(today.getDate() - i);
-                let day = pastDate.getDate().toString().padStart(2, '0');
-                let month = (pastDate.getMonth() + 1).toString().padStart(2, '0');
-                dates.push(`${day}/${month}`);
-            }
-    
-            return dates;
+         const tradeDatas = {
+            "14/03/2025": { day: "Segunda-feira", resultado: 200 },
+            "15/03/2025": { day: "Terça-feira", resultado: -150 },
+            "16/03/2025": { day: "Quarta-feira", resultado: 50 },
+            "17/03/2025": { day: "Quinta-feira", resultado: -200 },
+            "18/03/2025": { day: "Sexta-feira", resultado: 100 }
+        };
+
+        const tradeData = {
+            "14/03/2025": { day: "Segunda-feira", detalhes: [
+                "<strong>Ativo:</strong> WDOFUT",
+                "<strong>Abertura:</strong> 11/03/2025 09:15:00",
+                "<strong>Fechamento:</strong> 11/03/2025 10:45:00",
+                "<strong>Tempo Operação:</strong> 1h30min",
+                "<strong>Qtd Compra:</strong> 2",
+                "<strong>Qtd Venda:</strong> 2",
+                "<strong>Lado:</strong> C",
+                "<strong>Preço Compra:</strong> 5.805,00",
+                "<strong>Preço Venda:</strong> 5.815,00",
+                "<strong>Preço de Mercado:</strong> 5.810,00"
+            ]},
+            "15/03/2025": { day: "Terça-feira", detalhes: [
+                "<strong>Ativo:</strong> WDOFUT",
+                "<strong>Abertura:</strong> 12/03/2025 10:00:00",
+                "<strong>Fechamento:</strong> 12/03/2025 11:30:00",
+                "<strong>Tempo Operação:</strong> 1h30min",
+                "<strong>Qtd Compra:</strong> 3",
+                "<strong>Qtd Venda:</strong> 3",
+                "<strong>Lado:</strong> V",
+                "<strong>Preço Compra:</strong> 5.812,00",
+                "<strong>Preço Venda:</strong> 5.804,00",
+                "<strong>Preço de Mercado:</strong> 5.806,00"
+            ]},
+            "16/03/2025": { day: "Quarta-feira", detalhes: [
+                "<strong>Ativo:</strong> WDOFUT",
+                "<strong>Abertura:</strong> 13/03/2025 17:20:00",
+                "<strong>Fechamento:</strong> 13/03/2025 18:10:00",
+                "<strong>Tempo Operação:</strong> 50min",
+                "<strong>Qtd Compra:</strong> 3",
+                "<strong>Qtd Venda:</strong> 3",
+                "<strong>Lado:</strong> C",
+                "<strong>Preço Compra:</strong> 5.823,00",
+                "<strong>Preço Venda:</strong> 5.819,00",
+                "<strong>Preço de Mercado:</strong> 5.756,00"
+            ]},
+            
+            "17/03/2025": { day: "Quinta-feira", detalhes: [
+                "<strong>Ativo:</strong> WDOFUT",
+                "<strong>Abertura:</strong> 13/03/2025 17:20:00",
+                "<strong>Fechamento:</strong> 13/03/2025 18:10:00",
+                "<strong>Tempo Operação:</strong> 50min",
+                "<strong>Qtd Compra:</strong> 3",
+                "<strong>Qtd Venda:</strong> 3",
+                "<strong>Lado:</strong> C",
+                "<strong>Preço Compra:</strong> 5.823,00",
+                "<strong>Preço Venda:</strong> 5.819,00",
+                "<strong>Preço de Mercado:</strong> 5.756,00"
+            ]},
+            
+            "18/03/2025": { day: "Sexta-feira", detalhes: [
+                "<strong>Ativo:</strong> WDOFUT",
+                "<strong>Abertura:</strong> 13/03/2025 17:20:00",
+                "<strong>Fechamento:</strong> 13/03/2025 18:10:00",
+                "<strong>Tempo Operação:</strong> 50min",
+                "<strong>Qtd Compra:</strong> 3",
+                "<strong>Qtd Venda:</strong> 3",
+                "<strong>Lado:</strong> C",
+                "<strong>Preço Compra:</strong> 5.823,00",
+                "<strong>Preço Venda:</strong> 5.819,00",
+                "<strong>Preço de Mercado:</strong> 5.756,00"
+            ]}
+        };
+
+        function generateCards() {
+            const container = document.getElementById("cards-container");
+            container.innerHTML = "";
+            Object.keys(tradeData).forEach(date => {
+                const data = tradeData[date];
+                const card = document.createElement("div");
+                card.className = "card";
+                card.innerHTML = `<h2>${data.day}</h2><p><strong>Data: ${date}</strong></p>`;
+                card.onclick = () => openModal(date);
+                container.appendChild(card);
+            });
         }
-    
-        var labels = getLast7Days(); // Corrigido para chamar a função correta
-    
-        var ctxBacktest = document.getElementById('backtestChart').getContext('2d');
-        var backtestChart = new Chart(ctxBacktest, {
-            type: 'line',
-            data: {
-                labels: labels,
-                datasets: [{
-                    label: 'Backtest',
-                    data: [3.2, 2.8, 3.0, 3.5, 3.7, 3.1, 3.4], // Agora com 7 valores
-                    borderColor: '#4A90E2',
-                    backgroundColor: 'rgba(74, 144, 226, 0.1)',
-                    fill: true,
-                    tension: 0.3
-                }]
-            },
-            options: {
-                responsive: true,
-                maintainAspectRatio: false,
-                scales: {
-                    y: {
-                        beginAtZero: true,
-                        suggestedMin: 0,
-                        suggestedMax: 5
+        
+        function openModal(date) {
+            const modal = document.getElementById("modal");
+            const modalBody = document.getElementById("modal-body");
+            modalBody.innerHTML = "";
+            tradeData[date].detalhes.forEach(detalhe => {
+                modalBody.innerHTML += `<p>${detalhe}</p>`;
+            });
+            modal.style.display = "flex";
+        }
+        
+        function closeModal() {
+            document.getElementById("modal").style.display = "none";
+        }
+        function generateChart() {
+            const labels = Object.keys(tradeDatas);
+            const data = labels.map(date => tradeDatas[date].resultado);
+            
+            const ctx = document.getElementById('resultsChart').getContext('2d');
+            new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: labels,
+                    datasets: [{
+                        label: 'Resultado do Dia',
+                        data: data,
+                        borderColor: 'rgba(76, 175, 80, 1)',
+                        backgroundColor: 'rgba(76, 175, 80, 0.2)',
+                        fill: true,
+                        tension: 0.3
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        y: {
+                            beginAtZero: true
+                        }
                     }
                 }
-            }
-        });
+            });
+        }
+        
+        generateCards();
+        generateChart();
     
-        var ctxInvested = document.getElementById('investedChart').getContext('2d');
-        var investedChart = new Chart(ctxInvested, {
-            type: 'bar',
-            data: {
-                labels: labels,
-                datasets: [{
-                    label: 'Total Investido',
-                    data: [50000, 51000, 52000, 53000, 54000, 55000, 56000], // Agora com 7 valores
-                    backgroundColor: 'rgba(100, 181, 246, 0.7)'
-                }]
-            },
-            options: {
-                responsive: true,
-                maintainAspectRatio: false
-            }
-        });
-    
-        var ctxProfitLoss = document.getElementById('profitLossChart').getContext('2d');
-        var profitLossChart = new Chart(ctxProfitLoss, {
-            type: 'bar',
-            data: {
-                labels: labels,
-                datasets: [{
-                    label: 'Lucro',
-                    data: [2000, 1500, 1800, 2200, 2500, 2300, 2700], // Agora com 7 valores
-                    backgroundColor: 'rgba(76, 175, 80, 0.7)'
-                }]
-            },
-            options: {
-                responsive: true,
-                maintainAspectRatio: false
-            }
-        });
     </script>
-    
 </body>
 </html>
