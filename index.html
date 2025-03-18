@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard de Backtest</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f8f9fa;
+            margin: 20px;
+        }
+        .container {
+            max-width: 1200px;
+            margin: auto;
+            padding: 20px;
+        }
+        .dashboard {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: space-between;
+            gap: 10px;
+        }
+        .card {
+            background: #fff;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+            flex: 1;
+            min-width: 250px;
+            text-align: center;
+        }
+        .card h2 {
+            margin-bottom: 10px;
+            font-size: 18px;
+        }
+        .chart-container {
+            width: 100%;
+            margin-top: 20px;
+            background: #fff;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+        }
+        canvas {
+            max-height: 300px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Dashboard de Backtest</h1>
+        <div class="dashboard">
+            <div class="card">
+                <h2>Backtest (Último Dia)</h2>
+                <p><strong>+3.2%</strong></p>
+            </div>
+            <div class="card">
+                <h2>Backtest (200 Dias)</h2>
+                <p><strong>+12.5%</strong></p>
+            </div>
+            <div class="card">
+                <h2>Lucro Total</h2>
+                <p><strong>R$ 15.320</strong></p>
+            </div>
+            <div class="card">
+                <h2>Total Investido</h2>
+                <p><strong>R$ 50.000</strong></p>
+            </div>
+        </div>
+        
+        <div class="chart-container">
+            <h2>Gráfico de Backtest</h2>
+            <canvas id="backtestChart"></canvas>
+        </div>
+        
+        <div class="chart-container">
+            <h2>Lâmina de Decisão</h2>
+            <p>Baseado na análise, recomenda-se manter a posição.</p>
+        </div>
+    </div>
+
+    <script>
+        var ctx = document.getElementById('backtestChart').getContext('2d');
+        var backtestChart = new Chart(ctx, {
+            type: 'line',
+            data: {
+                labels: ['Jan', 'Fev', 'Mar', 'Abr', 'Mai'],
+                datasets: [{
+                    label: 'Backtest',
+                    data: [10, 15, 8, 12, 20],
+                    borderColor: 'blue',
+                    backgroundColor: 'rgba(0, 0, 255, 0.1)',
+                    fill: true,
+                    tension: 0.3
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        suggestedMin: 0,
+                        suggestedMax: 25
+                    }
+                }
+            }
+        });
+    </script>
+</body>
+</html>
