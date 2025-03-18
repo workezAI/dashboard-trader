@@ -1064,19 +1064,41 @@ function generateCards() {
 
     
  
+// Abra o modal
 function openModal(date) {
-    const modal = document.getElementById("modal");
-    const modalBody = document.getElementById("modal-body");
-    modalBody.innerHTML = "";
-    tradeData[date].detalhes.forEach(detalhe => {
-        modalBody.innerHTML += `<p>${detalhe}</p><hr>`;
-    });
-    modal.style.display = "flex";
+  const modal = document.getElementById("modal");
+  const modalBody = document.getElementById("modal-body");
+  modalBody.innerHTML = "";
+
+  tradeData[date].detalhes.forEach(detalhe => {
+    modalBody.innerHTML += `<p>${detalhe}</p><hr>`;
+  });
+  
+  // Mostra o modal
+  modal.style.display = "flex";
+
+  // Adiciona listener para fechar clicando fora
+  modal.addEventListener("click", clickOutsideToClose);
 }
 
+// Fecha o modal
 function closeModal() {
-    document.getElementById("modal").style.display = "none";
+  const modal = document.getElementById("modal");
+  modal.style.display = "none";
+
+  // Remove o listener quando fecha o modal,
+  // para evitar múltiplos listeners
+  modal.removeEventListener("click", clickOutsideToClose);
 }
+
+// Função callback para fechar ao clicar fora
+function clickOutsideToClose(event) {
+  const modal = document.getElementById("modal");
+  if (event.target === modal) {
+    closeModal();
+  }
+}
+
 
 // Exemplo para gerar o gráfico (se você tiver outro objeto de resultados, adapte):
 function generateChart() {
