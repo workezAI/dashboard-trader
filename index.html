@@ -28,7 +28,6 @@
             border-radius: 8px;
             box-shadow: 0 4px 8px rgba(0,0,0,0.1);
             flex: 1;
-            
             text-align: center;
         }
         .card h2 {
@@ -36,7 +35,6 @@
             font-size: 18px;
         }
         .chart-container {
-            
             margin-top: 20px;
             background: #fff;
             padding: 20px;
@@ -51,25 +49,40 @@
 <body>
     <div class="container">
         <h1>Dashboard de Backtest</h1>
+        
+        <!-- Painel Diário -->
         <div class="dashboard">
             <div class="card">
-                <h2>Backtest (Último Dia)</h2>
-                <p><strong>+3.2%</strong></p>
+                <h2>Terça-feira</h2>
+                <p><strong>Lucro: R$ 2.000</strong></p>
+                <p><strong>Total Investido: R$ 50.000</strong></p>
+                <p><strong>Backtest: +3.2%</strong></p>
+                <p><em>Decisão: Manter posição</em></p>
             </div>
             <div class="card">
-                <h2>Backtest (200 Dias)</h2>
-                <p><strong>+12.5%</strong></p>
+                <h2>Quarta-feira</h2>
+                <p><strong>Lucro: R$ 1.500</strong></p>
+                <p><strong>Total Investido: R$ 51.000</strong></p>
+                <p><strong>Backtest: +2.8%</strong></p>
+                <p><em>Decisão: Aumentar posição</em></p>
             </div>
             <div class="card">
-                <h2>Lucro Total</h2>
-                <p><strong>R$ 15.320</strong></p>
+                <h2>Quinta-feira</h2>
+                <p><strong>Lucro: R$ 1.800</strong></p>
+                <p><strong>Total Investido: R$ 52.000</strong></p>
+                <p><strong>Backtest: +3.0%</strong></p>
+                <p><em>Decisão: Rebalancear carteira</em></p>
             </div>
             <div class="card">
-                <h2>Total Investido</h2>
-                <p><strong>R$ 50.000</strong></p>
+                <h2>Sexta-feira</h2>
+                <p><strong>Lucro: R$ 2.300</strong></p>
+                <p><strong>Total Investido: R$ 53.500</strong></p>
+                <p><strong>Backtest: +3.5%</strong></p>
+                <p><em>Decisão: Realizar parcial</em></p>
             </div>
         </div>
         
+        <!-- Gráficos -->
         <div class="chart-container">
             <h2>Gráfico de Backtest</h2>
             <canvas id="backtestChart"></canvas>
@@ -84,22 +97,32 @@
             <h2>Gráfico de Perda e Ganho</h2>
             <canvas id="profitLossChart"></canvas>
         </div>
-        
-        <div class="chart-container">
-            <h2>Lâmina de Decisão</h2>
-            <p>Baseado na análise, recomenda-se manter a posição.</p>
-        </div>
     </div>
 
     <script>
+        function getLast4Days() {
+            let dates = [];
+            let today = new Date();
+            for (let i = 3; i >= 0; i--) {
+                let pastDate = new Date();
+                pastDate.setDate(today.getDate() - i);
+                let day = pastDate.getDate().toString().padStart(2, '0');
+                let month = (pastDate.getMonth() + 1).toString().padStart(2, '0');
+                dates.push(`${day}/${month}`);
+            }
+            return dates;
+        }
+    
+        var labels = getLast4Days();
+
         var ctxBacktest = document.getElementById('backtestChart').getContext('2d');
         var backtestChart = new Chart(ctxBacktest, {
             type: 'line',
             data: {
-                labels: ['Jan', 'Fev', 'Mar', 'Abr', 'Mai'],
+                labels: labels,
                 datasets: [{
                     label: 'Backtest',
-                    data: [10, 15, 8, 12, 20],
+                    data: [3.2, 2.8, 3.0, 3.5],
                     borderColor: '#4A90E2',
                     backgroundColor: 'rgba(74, 144, 226, 0.1)',
                     fill: true,
@@ -113,7 +136,7 @@
                     y: {
                         beginAtZero: true,
                         suggestedMin: 0,
-                        suggestedMax: 25
+                        suggestedMax: 5
                     }
                 }
             }
@@ -123,10 +146,10 @@
         var investedChart = new Chart(ctxInvested, {
             type: 'bar',
             data: {
-                labels: ['Jan', 'Fev', 'Mar', 'Abr', 'Mai'],
+                labels: labels,
                 datasets: [{
                     label: 'Total Investido',
-                    data: [40000, 42000, 45000, 47000, 50000],
+                    data: [50000, 51000, 52000, 53500],
                     backgroundColor: 'rgba(100, 181, 246, 0.7)'
                 }]
             },
@@ -140,25 +163,16 @@
         var profitLossChart = new Chart(ctxProfitLoss, {
             type: 'bar',
             data: {
-                labels: ['Jan', 'Fev', 'Mar', 'Abr', 'Mai'],
+                labels: labels,
                 datasets: [{
-                    label: 'Ganho',
-                    data: [5, 8, 6, 7, 10],
+                    label: 'Lucro',
+                    data: [2000, 1500, 1800, 2300],
                     backgroundColor: 'rgba(76, 175, 80, 0.7)'
-                }, {
-                    label: 'Perda',
-                    data: [2, 3, 4, 2, 1],
-                    backgroundColor: 'rgba(244, 67, 54, 0.7)'
                 }]
             },
             options: {
                 responsive: true,
-                maintainAspectRatio: false,
-                scales: {
-                    y: {
-                        beginAtZero: true
-                    }
-                }
+                maintainAspectRatio: false
             }
         });
     </script>
