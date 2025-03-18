@@ -30,24 +30,39 @@
             cursor: pointer;
         }
         .modal {
-            display: none;
-            position: fixed;
-            z-index: 1;
-            left: 0;
-            top: 0;
-            width: 100%;
-            height: 100%;
-            background-color: rgba(0,0,0,0.5);
-            justify-content: center;
-            align-items: center;
-        }
-        .modal-content {
-            background: #fff;
-            padding: 20px;
-            border-radius: 8px;
-            width: 60%;
-            max-width: 600px;
-        }
+  display: none;
+  position: fixed;
+  top: 0; left: 0; right: 0; bottom: 0;
+  /* Fundo semitransparente */
+  background: rgba(0, 0, 0, 0.7);
+  justify-content: center;
+  align-items: center;
+  z-index: 999; /* fique por cima de tudo */
+}
+
+.modal-content {
+  background: #fff;       /* fundo branco */
+  padding: 20px;          /* espaçamento interno */
+  border-radius: 5px;
+  max-height: 80vh;       /* limite vertical do conteúdo */
+  overflow-y: auto;       /* rolagem interna */
+  box-sizing: border-box;
+  width: 90%;
+  max-width: 600px;       /* limite de largura */
+}
+
+/* Remove a scrollbar no Chrome, Safari, Opera */
+.modal-content::-webkit-scrollbar {
+  display: none;
+}
+
+/* Remove a scrollbar no IE, Edge e Firefox */
+.modal-content {
+  -ms-overflow-style: none;  /* IE e Edge */
+  scrollbar-width: none;     /* Firefox */
+}
+
+
         .close {
             float: right;
             font-size: 20px;
@@ -93,138 +108,911 @@
             "18/03/2025": { day: "Sexta-feira", resultado: 100 }
         };
 
-        const tradeData = {
-            "14/03/2025": { day: "Segunda-feira", detalhes: [
-                "<strong>Ativo:</strong> WDOFUT",
-                "<strong>Abertura:</strong> 11/03/2025 09:15:00",
-                "<strong>Fechamento:</strong> 11/03/2025 10:45:00",
-                "<strong>Tempo Operação:</strong> 1h30min",
-                "<strong>Qtd Compra:</strong> 2",
-                "<strong>Qtd Venda:</strong> 2",
-                "<strong>Lado:</strong> C",
-                "<strong>Preço Compra:</strong> 5.805,00",
-                "<strong>Preço Venda:</strong> 5.815,00",
-                "<strong>Preço de Mercado:</strong> 5.810,00",
-                "<strong>FinalSignal:</strong> Contra"
-
-            ]},
-            "15/03/2025": { day: "Terça-feira", detalhes: [
-                "<strong>Ativo:</strong> WDOFUT",
-                "<strong>Abertura:</strong> 12/03/2025 10:00:00",
-                "<strong>Fechamento:</strong> 12/03/2025 11:30:00",
-                "<strong>Tempo Operação:</strong> 1h30min",
-                "<strong>Qtd Compra:</strong> 3",
-                "<strong>Qtd Venda:</strong> 3",
-                "<strong>Lado:</strong> V",
-                "<strong>Preço Compra:</strong> 5.812,00",
-                "<strong>Preço Venda:</strong> 5.804,00",
-                "<strong>Preço de Mercado:</strong> 5.806,00",
-                "<strong>FinalSignal:</strong> Contra"
-
-            ]},
-            "16/03/2025": { day: "Quarta-feira", detalhes: [
-                "<strong>Ativo:</strong> WDOFUT",
-                "<strong>Abertura:</strong> 13/03/2025 17:20:00",
-                "<strong>Fechamento:</strong> 13/03/2025 18:10:00",
-                "<strong>Tempo Operação:</strong> 50min",
-                "<strong>Qtd Compra:</strong> 3",
-                "<strong>Qtd Venda:</strong> 3",
-                "<strong>Lado:</strong> C",
-                "<strong>Preço Compra:</strong> 5.823,00",
-                "<strong>Preço Venda:</strong> 5.819,00",
-                "<strong>Preço de Mercado:</strong> 5.756,00",
-                "<strong>FinalSignal:</strong> A favor"
-
-            ]},
+        const tradeDataArray = [
             
-            "17/03/2025": { day: "Quinta-feira", detalhes: [
-                "<strong>Ativo:</strong> WDOFUT",
-                "<strong>Abertura:</strong> 13/03/2025 17:20:00",
-                "<strong>Fechamento:</strong> 13/03/2025 18:10:00",
-                "<strong>Tempo Operação:</strong> 50min",
-                "<strong>Qtd Compra:</strong> 3",
-                "<strong>Qtd Venda:</strong> 3",
-                "<strong>Lado:</strong> C",
-                "<strong>Preço Compra:</strong> 5.823,00",
-                "<strong>Preço Venda:</strong> 5.819,00",
-                "<strong>Preço de Mercado:</strong> 5.756,00",
-                "<strong>FinalSignal:</strong> A favor"
-
-            ]},
             
-            "18/03/2025": { day: "Sexta-feira", detalhes: [
-                "<strong>Ativo:</strong> WDOFUT",
-                "<strong>Abertura:</strong> 13/03/2025 17:20:00",
-                "<strong>Fechamento:</strong> 13/03/2025 18:10:00",
-                "<strong>Tempo Operação:</strong> 50min",
-                "<strong>Qtd Compra:</strong> 3",
-                "<strong>Qtd Venda:</strong> 3",
-                "<strong>Lado:</strong> C",
-                "<strong>Preço Compra:</strong> 5.823,00",
-                "<strong>Preço Venda:</strong> 5.819,00",
-                "<strong>Preço de Mercado:</strong> 5.756,00",
-                "<strong>FinalSignal:</strong> Contra"
-            ]}
+  {
+    "Ativo": "WDOFUT",
+    "Abertura": "11/03/2025 11:20:00",
+    "Fechamento": "11/03/2025 11:35:00",
+    "Tempo Operacao": "15min",
+    "Qtd Compra": "3",
+    "Qtd Venda": "3",
+    "Lado": "C",
+    "Preco Compra": "5.857.50",
+    "Preco Venda": "5.852.00",
+    "Preco de Mercado": "5.756.00",
+    "Medio": "Sim",
+    "Res. Intervalo": "-165.00",
+    "Res. Intervalo (%)": "-5.50",
+    "Numero Operacao": "263",
+    "Res. Operacao": "-165.00",
+    "Res. Operacao (%)": "-5.50",
+    "Drawdown": "-165.00",
+    "Ganho Max.": "0.00",
+    "Perda Max.": "0.00",
+    "TET": "16h55min",
+    "Total": "-18.225.00",
+    "total_investido": "175725.00"
+  },
+  { 
+    "Ativo": "WDOFUT",
+    "Abertura": "11/03/2025 11:35:00",
+    "Fechamento": "11/03/2025 11:45:00",
+    "Tempo Operacao": "10min",
+    "Qtd Compra": "3",
+    "Qtd Venda": "3",
+    "Lado": "V",
+    "Preco Compra": "5.867.00",
+    "Preco Venda": "5.852.00",
+    "Preco de Mercado": "5.756.00",
+    "Medio": "Nao",
+    "Res. Intervalo": "-450.00",
+    "Res. Intervalo (%)": "-15.00",
+    "Numero Operacao": "264",
+    "Res. Operacao": "-450.00",
+    "Res. Operacao (%)": "-15.00",
+    "Drawdown": "2.880.00",
+    "Ganho Max.": "0.00",
+    "Perda Max.": "0.00",
+    "TET": "15min",
+    "Total": "-18.675.00",
+    "total_investido": "176010.00"
+  },
+  {
+    "Ativo": "WDOFUT",
+    "Abertura": "11/03/2025 11:45:00",
+    "Fechamento": "11/03/2025 12:15:00",
+    "Tempo Operacao": "30min",
+    "Qtd Compra": "3",
+    "Qtd Venda": "3",
+    "Lado": "C",
+    "Preco Compra": "5.867.00",
+    "Preco Venda": "5.853.50",
+    "Preco de Mercado": "5.756.00",
+    "Medio": "Nao",
+    "Res. Intervalo": "-405.00",
+    "Res. Intervalo (%)": "-13.50",
+    "Numero Operacao": "265",
+    "Res. Operacao": "-405.00",
+    "Res. Operacao (%)": "-13.50",
+    "Drawdown": "-405.00",
+    "Ganho Max.": "0.00",
+    "Perda Max.": "0.00",
+    "TET": "10min",
+    "Total": "-19.080.00",
+    "total_investido": "176010.00"
+  },
+  {
+    "Ativo": "WDOFUT",
+    "Abertura": "11/03/2025 12:15:00",
+    "Fechamento": "11/03/2025 13:50:00",
+    "Tempo Operacao": "1h35min",
+    "Qtd Compra": "3",
+    "Qtd Venda": "3",
+    "Lado": "V",
+    "Preco Compra": "5.857.50",
+    "Preco Venda": "5.853.50",
+    "Preco de Mercado": "5.756.00",
+    "Medio": "Sim",
+    "Res. Intervalo": "-120.00",
+    "Res. Intervalo (%)": "-4.00",
+    "Numero Operacao": "266",
+    "Res. Operacao": "-120.00",
+    "Res. Operacao (%)": "-4.00",
+    "Drawdown": "2.925.00",
+    "Ganho Max.": "0.00",
+    "Perda Max.": "0.00",
+    "TET": "30min",
+    "Total": "-19.200.00",
+    "total_investido": "175725.00"
+  },
+  {
+    "Ativo": "WDOFUT",
+    "Abertura": "11/03/2025 13:50:00",
+    "Fechamento": "11/03/2025 15:00:00",
+    "Tempo Operacao": "1h10min",
+    "Qtd Compra": "3",
+    "Qtd Venda": "3",
+    "Lado": "C",
+    "Preco Compra": "5.857.50",
+    "Preco Venda": "5.855.00",
+    "Preco de Mercado": "5.756.00",
+    "Medio": "Sim",
+    "Res. Intervalo": "-75.00",
+    "Res. Intervalo (%)": "-2.50",
+    "Numero Operacao": "267",
+    "Res. Operacao": "-75.00",
+    "Res. Operacao (%)": "-2.50",
+    "Drawdown": "-75.00",
+    "Ganho Max.": "0.00",
+    "Perda Max.": "0.00",
+    "TET": "1h35min",
+    "Total": "-19.275.00",
+    "total_investido": "175725.00"
+  },
+  {
+    "Ativo": "WDOFUT",
+    "Abertura": "11/03/2025 15:00:00",
+    "Fechamento": "11/03/2025 17:05:00",
+    "Tempo Operacao": "2h5min",
+    "Qtd Compra": "3",
+    "Qtd Venda": "3",
+    "Lado": "V",
+    "Preco Compra": "5.836.50",
+    "Preco Venda": "5.855.00",
+    "Preco de Mercado": "5.756.00",
+    "Medio": "Sim",
+    "Res. Intervalo": "555.00",
+    "Res. Intervalo (%)": "18.50",
+    "Numero Operacao": "268",
+    "Res. Operacao": "555.00",
+    "Res. Operacao (%)": "18.50",
+    "Drawdown": "2.970.00",
+    "Ganho Max.": "0.00",
+    "Perda Max.": "0.00",
+    "TET": "1h10min",
+    "Total": "-18.720.00",
+    "total_investido": "175095.00"
+  },
+  {
+    "Ativo": "WDOFUT",
+    "Abertura": "11/03/2025 17:05:00",
+    "Fechamento": "11/03/2025 18:00:00",
+    "Tempo Operacao": "55min",
+    "Qtd Compra": "3",
+    "Qtd Venda": "3",
+    "Lado": "C",
+    "Preco Compra": "5.836.50",
+    "Preco Venda": "5.834.50",
+    "Preco de Mercado": "5.756.00",
+    "Medio": "Sim",
+    "Res. Intervalo": "-60.00",
+    "Res. Intervalo (%)": "-2.00",
+    "Numero Operacao": "269",
+    "Res. Operacao": "-60.00",
+    "Res. Operacao (%)": "-2.00",
+    "Drawdown": "-60.00",
+    "Ganho Max.": "0.00",
+    "Perda Max.": "0.00",
+    "TET": "2h5min",
+    "Total": "-18.780.00",
+    "total_investido": "175095.00"
+  },
+  {
+    "Ativo": "WDOFUT",
+    "Abertura": "11/03/2025 18:00:00",
+    "Fechamento": "12/03/2025 09:10:00",
+    "Tempo Operacao": "15h10min",
+    "Qtd Compra": "3",
+    "Qtd Venda": "3",
+    "Lado": "V",
+    "Preco Compra": "5.846.50",
+    "Preco Venda": "5.834.50",
+    "Preco de Mercado": "5.756.00",
+    "Medio": "Nao",
+    "Res. Intervalo": "-360.00",
+    "Res. Intervalo (%)": "-12.00",
+    "Numero Operacao": "270",
+    "Res. Operacao": "-360.00",
+    "Res. Operacao (%)": "-12.00",
+    "Drawdown": "2.355.00",
+    "Ganho Max.": "0.00",
+    "Perda Max.": "0.00",
+    "TET": "55min",
+    "Total": "-19.140.00",
+    "total_investido": "175395.00"
+  },
+  {
+    "Ativo": "WDOFUT",
+    "Abertura": "12/03/2025 09:10:00",
+    "Fechamento": "12/03/2025 10:45:00",
+    "Tempo Operacao": "1h35min",
+    "Qtd Compra": "3",
+    "Qtd Venda": "3",
+    "Lado": "C",
+    "Preco Compra": "5.846.50",
+    "Preco Venda": "5.839.50",
+    "Preco de Mercado": "5.756.00",
+    "Medio": "Nao",
+    "Res. Intervalo": "-210.00",
+    "Res. Intervalo (%)": "-7.00",
+    "Numero Operacao": "271",
+    "Res. Operacao": "-210.00",
+    "Res. Operacao (%)": "-7.00",
+    "Drawdown": "-210.00",
+    "Ganho Max.": "0.00",
+    "Perda Max.": "0.00",
+    "TET": "15h10min",
+    "Total": "-19.350.00",
+    "total_investido": "175395.00"
+  },
+  {
+    "Ativo": "WDOFUT",
+    "Abertura": "12/03/2025 10:45:00",
+    "Fechamento": "12/03/2025 11:30:00",
+    "Tempo Operacao": "45min",
+    "Qtd Compra": "3",
+    "Qtd Venda": "3",
+    "Lado": "V",
+    "Preco Compra": "5.844.50",
+    "Preco Venda": "5.839.50",
+    "Preco de Mercado": "5.756.00",
+    "Medio": "Sim",
+    "Res. Intervalo": "-150.00",
+    "Res. Intervalo (%)": "-5.00",
+    "Numero Operacao": "272",
+    "Res. Operacao": "-150.00",
+    "Res. Operacao (%)": "-5.00",
+    "Drawdown": "2.505.00",
+    "Ganho Max.": "0.00",
+    "Perda Max.": "0.00",
+    "TET": "1h35min",
+    "Total": "-19.500.00",
+    "total_investido": "175335.00"
+  },
+  {
+    "Ativo": "WDOFUT",
+    "Abertura": "12/03/2025 11:30:00",
+    "Fechamento": "12/03/2025 12:15:00",
+    "Tempo Operacao": "45min",
+    "Qtd Compra": "3",
+    "Qtd Venda": "3",
+    "Lado": "C",
+    "Preco Compra": "5.844.50",
+    "Preco Venda": "5.840.50",
+    "Preco de Mercado": "5.756.00",
+    "Medio": "Sim",
+    "Res. Intervalo": "-120.00",
+    "Res. Intervalo (%)": "-4.00",
+    "Numero Operacao": "273",
+    "Res. Operacao": "-120.00",
+    "Res. Operacao (%)": "-4.00",
+    "Drawdown": "-120.00",
+    "Ganho Max.": "0.00",
+    "Perda Max.": "0.00",
+    "TET": "45min",
+    "Total": "-19.620.00",
+    "total_investido": "175335.00"
+  },
+  {
+    "Ativo": "WDOFUT",
+    "Abertura": "12/03/2025 12:15:00",
+    "Fechamento": "12/03/2025 13:05:00",
+    "Tempo Operacao": "50min",
+    "Qtd Compra": "3",
+    "Qtd Venda": "3",
+    "Lado": "V",
+    "Preco Compra": "5.844.00",
+    "Preco Venda": "5.840.50",
+    "Preco de Mercado": "5.756.00",
+    "Medio": "Sim",
+    "Res. Intervalo": "-105.00",
+    "Res. Intervalo (%)": "-3.50",
+    "Numero Operacao": "274",
+    "Res. Operacao": "-105.00",
+    "Res. Operacao (%)": "-3.50",
+    "Drawdown": "2.535.00",
+    "Ganho Max.": "0.00",
+    "Perda Max.": "0.00",
+    "TET": "45min",
+    "Total": "-19.725.00",
+    "total_investido": "175320.00"
+  },
+  {
+    "Ativo": "WDOFUT",
+    "Abertura": "12/03/2025 13:05:00",
+    "Fechamento": "12/03/2025 13:25:00",
+    "Tempo Operacao": "20min",
+    "Qtd Compra": "3",
+    "Qtd Venda": "3",
+    "Lado": "C",
+    "Preco Compra": "5.844.00",
+    "Preco Venda": "5.837.50",
+    "Preco de Mercado": "5.756.00",
+    "Medio": "Sim",
+    "Res. Intervalo": "-195.00",
+    "Res. Intervalo (%)": "-6.50",
+    "Numero Operacao": "275",
+    "Res. Operacao": "-195.00",
+    "Res. Operacao (%)": "-6.50",
+    "Drawdown": "-195.00",
+    "Ganho Max.": "0.00",
+    "Perda Max.": "0.00",
+    "TET": "50min",
+    "Total": "-19.920.00",
+    "total_investido": "175320.00"
+  },
+  {
+    "Ativo": "WDOFUT",
+    "Abertura": "12/03/2025 13:25:00",
+    "Fechamento": "12/03/2025 13:45:00",
+    "Tempo Operacao": "20min",
+    "Qtd Compra": "3",
+    "Qtd Venda": "3",
+    "Lado": "V",
+    "Preco Compra": "5.843.50",
+    "Preco Venda": "5.837.50",
+    "Preco de Mercado": "5.756.00",
+    "Medio": "Nao",
+    "Res. Intervalo": "-180.00",
+    "Res. Intervalo (%)": "-6.00",
+    "Numero Operacao": "276",
+    "Res. Operacao": "-180.00",
+    "Res. Operacao (%)": "-6.00",
+    "Drawdown": "2.445.00",
+    "Ganho Max.": "0.00",
+    "Perda Max.": "0.00",
+    "TET": "20min",
+    "Total": "-20.100.00",
+    "total_investido": "175305.00"
+  },
+  {
+    "Ativo": "WDOFUT",
+    "Abertura": "12/03/2025 13:45:00",
+    "Fechamento": "12/03/2025 14:00:00",
+    "Tempo Operacao": "15min",
+    "Qtd Compra": "3",
+    "Qtd Venda": "3",
+    "Lado": "C",
+    "Preco Compra": "5.843.50",
+    "Preco Venda": "5.840.00",
+    "Preco de Mercado": "5.756.00",
+    "Medio": "Sim",
+    "Res. Intervalo": "-105.00",
+    "Res. Intervalo (%)": "-3.50",
+    "Numero Operacao": "277",
+    "Res. Operacao": "-105.00",
+    "Res. Operacao (%)": "-3.50",
+    "Drawdown": "-105.00",
+    "Ganho Max.": "0.00",
+    "Perda Max.": "0.00",
+    "TET": "20min",
+    "Total": "-20.205.00",
+    "total_investido": "175305.00"
+  },
+  {
+    "Ativo": "WDOFUT",
+    "Abertura": "12/03/2025 14:00:00",
+    "Fechamento": "12/03/2025 14:05:00",
+    "Tempo Operacao": "5min",
+    "Qtd Compra": "3",
+    "Qtd Venda": "3",
+    "Lado": "V",
+    "Preco Compra": "5.845.00",
+    "Preco Venda": "5.840.00",
+    "Preco de Mercado": "5.756.00",
+    "Medio": "Sim",
+    "Res. Intervalo": "-150.00",
+    "Res. Intervalo (%)": "-5.00",
+    "Numero Operacao": "278",
+    "Res. Operacao": "-150.00",
+    "Res. Operacao (%)": "-5.00",
+    "Drawdown": "2.520.00",
+    "Ganho Max.": "0.00",
+    "Perda Max.": "0.00",
+    "TET": "15min",
+    "Total": "-20.355.00",
+    "total_investido": "175350.00"
+  },
+  {
+    "Ativo": "WDOFUT",
+    "Abertura": "12/03/2025 14:05:00",
+    "Fechamento": "12/03/2025 14:30:00",
+    "Tempo Operacao": "25min",
+    "Qtd Compra": "3",
+    "Qtd Venda": "3",
+    "Lado": "C",
+    "Preco Compra": "5.845.00",
+    "Preco Venda": "5.839.50",
+    "Preco de Mercado": "5.756.00",
+    "Medio": "Nao",
+    "Res. Intervalo": "-165.00",
+    "Res. Intervalo (%)": "-5.50",
+    "Numero Operacao": "279",
+    "Res. Operacao": "-165.00",
+    "Res. Operacao (%)": "-5.50",
+    "Drawdown": "-165.00",
+    "Ganho Max.": "0.00",
+    "Perda Max.": "0.00",
+    "TET": "5min",
+    "Total": "-20.520.00",
+    "total_investido": "175350.00"
+  },
+  {
+    "Ativo": "WDOFUT",
+    "Abertura": "12/03/2025 14:30:00",
+    "Fechamento": "12/03/2025 16:15:00",
+    "Tempo Operacao": "1h45min",
+    "Qtd Compra": "3",
+    "Qtd Venda": "3",
+    "Lado": "V",
+    "Preco Compra": "5.829.00",
+    "Preco Venda": "5.839.50",
+    "Preco de Mercado": "5.756.00",
+    "Medio": "Nao",
+    "Res. Intervalo": "315.00",
+    "Res. Intervalo (%)": "10.50",
+    "Numero Operacao": "280",
+    "Res. Operacao": "315.00",
+    "Res. Operacao (%)": "10.50",
+    "Drawdown": "2.505.00",
+    "Ganho Max.": "0.00",
+    "Perda Max.": "0.00",
+    "TET": "25min",
+    "Total": "-20.205.00",
+    "total_investido": "174870.00"
+  },
+  {
+    "Ativo": "WDOFUT",
+    "Abertura": "12/03/2025 16:15:00",
+    "Fechamento": "12/03/2025 17:25:00",
+    "Tempo Operacao": "1h10min",
+    "Qtd Compra": "3",
+    "Qtd Venda": "3",
+    "Lado": "C",
+    "Preco Compra": "5.829.00",
+    "Preco Venda": "5.824.00",
+    "Preco de Mercado": "5.756.00",
+    "Medio": "Sim",
+    "Res. Intervalo": "-150.00",
+    "Res. Intervalo (%)": "-5.00",
+    "Numero Operacao": "281",
+    "Res. Operacao": "-150.00",
+    "Res. Operacao (%)": "-5.00",
+    "Drawdown": "-150.00",
+    "Ganho Max.": "0.00",
+    "Perda Max.": "0.00",
+    "TET": "1h45min",
+    "Total": "-20.355.00",
+    "total_investido": "174870.00"
+  },
+  {
+    "Ativo": "WDOFUT",
+    "Abertura": "12/03/2025 17:25:00",
+    "Fechamento": "12/03/2025 18:20:00",
+    "Tempo Operacao": "55min",
+    "Qtd Compra": "3",
+    "Qtd Venda": "3",
+    "Lado": "V",
+    "Preco Compra": "5.827.50",
+    "Preco Venda": "5.824.00",
+    "Preco de Mercado": "5.756.00",
+    "Medio": "Nao",
+    "Res. Intervalo": "-105.00",
+    "Res. Intervalo (%)": "-3.50",
+    "Numero Operacao": "282",
+    "Res. Operacao": "-105.00",
+    "Res. Operacao (%)": "-3.50",
+    "Drawdown": "2.040.00",
+    "Ganho Max.": "0.00",
+    "Perda Max.": "0.00",
+    "TET": "1h10min",
+    "Total": "-20.460.00",
+    "total_investido": "174825.00"
+  },
+  {
+    "Ativo": "WDOFUT",
+    "Abertura": "12/03/2025 18:20:00",
+    "Fechamento": "13/03/2025 11:10:00",
+    "Tempo Operacao": "16h50min",
+    "Qtd Compra": "3",
+    "Qtd Venda": "3",
+    "Lado": "C",
+    "Preco Compra": "5.827.50",
+    "Preco Venda": "5.836.00",
+    "Preco de Mercado": "5.756.00",
+    "Medio": "Sim",
+    "Res. Intervalo": "255.00",
+    "Res. Intervalo (%)": "8.50",
+    "Numero Operacao": "283",
+    "Res. Operacao": "255.00",
+    "Res. Operacao (%)": "8.50",
+    "Drawdown": "255.00",
+    "Ganho Max.": "0.00",
+    "Perda Max.": "0.00",
+    "TET": "55min",
+    "Total": "-20.205.00",
+    "total_investido": "174825.00"
+  },
+  {
+    "Ativo": "WDOFUT",
+    "Abertura": "13/03/2025 11:10:00",
+    "Fechamento": "13/03/2025 13:25:00",
+    "Tempo Operacao": "2h15min",
+    "Qtd Compra": "3",
+    "Qtd Venda": "3",
+    "Lado": "V",
+    "Preco Compra": "5.828.00",
+    "Preco Venda": "5.836.00",
+    "Preco de Mercado": "5.756.00",
+    "Medio": "Sim",
+    "Res. Intervalo": "240.00",
+    "Res. Intervalo (%)": "8.00",
+    "Numero Operacao": "284",
+    "Res. Operacao": "240.00",
+    "Res. Operacao (%)": "8.00",
+    "Drawdown": "2.400.00",
+    "Ganho Max.": "0.00",
+    "Perda Max.": "0.00",
+    "TET": "16h50min",
+    "Total": "-19.965.00",
+    "total_investido": "174840.00"
+  },
+  {
+    "Ativo": "WDOFUT",
+    "Abertura": "13/03/2025 13:25:00",
+    "Fechamento": "13/03/2025 13:45:00",
+    "Tempo Operacao": "20min",
+    "Qtd Compra": "3",
+    "Qtd Venda": "3",
+    "Lado": "C",
+    "Preco Compra": "5.828.00",
+    "Preco Venda": "5.823.00",
+    "Preco de Mercado": "5.756.00",
+    "Medio": "Nao",
+    "Res. Intervalo": "-150.00",
+    "Res. Intervalo (%)": "-5.00",
+    "Numero Operacao": "285",
+    "Res. Operacao": "-150.00",
+    "Res. Operacao (%)": "-5.00",
+    "Drawdown": "-150.00",
+    "Ganho Max.": "0.00",
+    "Perda Max.": "0.00",
+    "TET": "2h15min",
+    "Total": "-20.115.00",
+    "total_investido": "174840.00"
+  },
+  {
+    "Ativo": "WDOFUT",
+    "Abertura": "13/03/2025 13:45:00",
+    "Fechamento": "13/03/2025 14:25:00",
+    "Tempo Operacao": "40min",
+    "Qtd Compra": "3",
+    "Qtd Venda": "3",
+    "Lado": "V",
+    "Preco Compra": "5.829.50",
+    "Preco Venda": "5.823.00",
+    "Preco de Mercado": "5.756.00",
+    "Medio": "Nao",
+    "Res. Intervalo": "-195.00",
+    "Res. Intervalo (%)": "-6.50",
+    "Numero Operacao": "286",
+    "Res. Operacao": "-195.00",
+    "Res. Operacao (%)": "-6.50",
+    "Drawdown": "2.010.00",
+    "Ganho Max.": "0.00",
+    "Perda Max.": "0.00",
+    "TET": "20min",
+    "Total": "-20.310.00",
+    "total_investido": "174885.00"
+  },
+  {
+    "Ativo": "WDOFUT",
+    "Abertura": "13/03/2025 14:25:00",
+    "Fechamento": "13/03/2025 15:25:00",
+    "Tempo Operacao": "1h",
+    "Qtd Compra": "3",
+    "Qtd Venda": "3",
+    "Lado": "C",
+    "Preco Compra": "5.829.50",
+    "Preco Venda": "5.826.50",
+    "Preco de Mercado": "5.756.00",
+    "Medio": "Nao",
+    "Res. Intervalo": "-90.00",
+    "Res. Intervalo (%)": "-3.00",
+    "Numero Operacao": "287",
+    "Res. Operacao": "-90.00",
+    "Res. Operacao (%)": "-3.00",
+    "Drawdown": "-90.00",
+    "Ganho Max.": "0.00",
+    "Perda Max.": "0.00",
+    "TET": "40min",
+    "Total": "-20.400.00",
+    "total_investido": "174885.00"
+  },
+  {
+    "Ativo": "WDOFUT",
+    "Abertura": "13/03/2025 15:25:00",
+    "Fechamento": "13/03/2025 16:05:00",
+    "Tempo Operacao": "40min",
+    "Qtd Compra": "3",
+    "Qtd Venda": "3",
+    "Lado": "V",
+    "Preco Compra": "5.829.50",
+    "Preco Venda": "5.826.50",
+    "Preco de Mercado": "5.756.00",
+    "Medio": "Sim",
+    "Res. Intervalo": "-90.00",
+    "Res. Intervalo (%)": "-3.00",
+    "Numero Operacao": "288",
+    "Res. Operacao": "-90.00",
+    "Res. Operacao (%)": "-3.00",
+    "Drawdown": "2.115.00",
+    "Ganho Max.": "0.00",
+    "Perda Max.": "0.00",
+    "TET": "1h",
+    "Total": "-20.490.00",
+    "total_investido": "174885.00"
+  },
+  {
+    "Ativo": "WDOFUT",
+    "Abertura": "13/03/2025 16:05:00",
+    "Fechamento": "13/03/2025 16:10:00",
+    "Tempo Operacao": "5min",
+    "Qtd Compra": "3",
+    "Qtd Venda": "3",
+    "Lado": "C",
+    "Preco Compra": "5.829.50",
+    "Preco Venda": "5.825.50",
+    "Preco de Mercado": "5.756.00",
+    "Medio": "Nao",
+    "Res. Intervalo": "-120.00",
+    "Res. Intervalo (%)": "-4.00",
+    "Numero Operacao": "289",
+    "Res. Operacao": "-120.00",
+    "Res. Operacao (%)": "-4.00",
+    "Drawdown": "-120.00",
+    "Ganho Max.": "0.00",
+    "Perda Max.": "0.00",
+    "TET": "40min",
+    "Total": "-20.610.00",
+    "total_investido": "174885.00"
+  },
+  {
+    "Ativo": "WDOFUT",
+    "Abertura": "13/03/2025 16:10:00",
+    "Fechamento": "13/03/2025 17:20:00",
+    "Tempo Operacao": "1h10min",
+    "Qtd Compra": "3",
+    "Qtd Venda": "3",
+    "Lado": "V",
+    "Preco Compra": "5.823.00",
+    "Preco Venda": "5.825.50",
+    "Preco de Mercado": "5.756.00",
+    "Medio": "Nao",
+    "Res. Intervalo": "75.00",
+    "Res. Intervalo (%)": "2.50",
+    "Numero Operacao": "290",
+    "Res. Operacao": "75.00",
+    "Res. Operacao (%)": "2.50",
+    "Drawdown": "2.085.00",
+    "Ganho Max.": "0.00",
+    "Perda Max.": "0.00",
+    "TET": "5min",
+    "Total": "-20.535.00",
+    "total_investido": "174690.00"
+  },
+  {
+    "Ativo": "WDOFUT",
+    "Abertura": "13/03/2025 17:20:00",
+    "Fechamento": "13/03/2025 18:10:00",
+    "Tempo Operacao": "50min",
+    "Qtd Compra": "3",
+    "Qtd Venda": "3",
+    "Lado": "C",
+    "Preco Compra": "5.823.00",
+    "Preco Venda": "5.819.00",
+    "Preco de Mercado": "5.756.00",
+    "Medio": "Sim",
+    "Res. Intervalo": "-120.00",
+    "Res. Intervalo (%)": "-4.00",
+    "Numero Operacao": "291",
+    "Res. Operacao": "-120.00",
+    "Res. Operacao (%)": "-4.00",
+    "Drawdown": "-120.00",
+    "Ganho Max.": "0.00",
+    "Perda Max.": "0.00",
+    "TET": "1h10min",
+    "Total": "-20.655.00",
+    "total_investido": "174690.00"
+  },
+  {
+    "Ativo": "WDOFUT",
+    "Abertura": "13/03/2025 18:10:00",
+    "Fechamento": "14/03/2025 12:35:00",
+    "Tempo Operacao": "18h25min",
+    "Qtd Compra": "3",
+    "Qtd Venda": "3",
+    "Lado": "V",
+    "Preco Compra": "5.754.00",
+    "Preco Venda": "5.819.00",
+    "Preco de Mercado": "5.756.00",
+    "Medio": "Nao",
+    "Res. Intervalo": "1.950.00",
+    "Res. Intervalo (%)": "65.00",
+    "Numero Operacao": "292",
+    "Res. Operacao": "1.950.00",
+    "Res. Operacao (%)": "65.00",
+    "Drawdown": "1.890.00",
+    "Ganho Max.": "0.00",
+    "Perda Max.": "0.00",
+    "TET": "50min",
+    "Total": "-18.705.00",
+    "total_investido": "172620.00"
+  },
+  {
+    "Ativo": "WDOFUT",
+    "Abertura": "14/03/2025 12:35:00",
+    "Fechamento": "14/03/2025 12:40:00",
+    "Tempo Operacao": "5min",
+    "Qtd Compra": "3",
+    "Qtd Venda": "3",
+    "Lado": "C",
+    "Preco Compra": "5.754.00",
+    "Preco Venda": "5.742.00",
+    "Preco de Mercado": "5.756.00",
+    "Medio": "Sim",
+    "Res. Intervalo": "-360.00",
+    "Res. Intervalo (%)": "-12.00",
+    "Numero Operacao": "293",
+    "Res. Operacao": "-360.00",
+    "Res. Operacao (%)": "-12.00",
+    "Drawdown": "-360.00",
+    "Ganho Max.": "0.00",
+    "Perda Max.": "0.00",
+    "TET": "18h25min",
+    "Total": "-19.065.00",
+    "total_investido": "172620.00"
+  },
+  {
+    "Ativo": "WDOFUT",
+    "Abertura": "14/03/2025 12:40:00",
+    "Fechamento": "14/03/2025 14:50:00",
+    "Tempo Operacao": "2h10min",
+    "Qtd Compra": "3",
+    "Qtd Venda": "3",
+    "Lado": "V",
+    "Preco Compra": "5.748.00",
+    "Preco Venda": "5.742.00",
+    "Preco de Mercado": "5.756.00",
+    "Medio": "Nao",
+    "Res. Intervalo": "-180.00",
+    "Res. Intervalo (%)": "-6.00",
+    "Numero Operacao": "294",
+    "Res. Operacao": "-180.00",
+    "Res. Operacao (%)": "-6.00",
+    "Drawdown": "-420.00",
+    "Ganho Max.": "0.00",
+    "Perda Max.": "0.00",
+    "TET": "5min",
+    "Total": "-19.245.00",
+    "total_investido": "172440.00"
+  },
+  {
+    "Ativo": "WDOFUT",
+    "Abertura": "14/03/2025 14:50:00",
+    "Fechamento": "-",
+    "Tempo Operacao": "-",
+    "Qtd Compra": "3",
+    "Qtd Venda": "0",
+    "Lado": "C",
+    "Preco Compra": "5.748.00",
+    "Preco Venda": "5.755.00",
+    "Preco de Mercado": "5.755.00",
+    "Medio": "Sim",
+    "Res. Intervalo": "210.00",
+    "Res. Intervalo (%)": "7.00",
+    "Numero Operacao": "295",
+    "Res. Operacao": "210.00",
+    "Res. Operacao (%)": "7.00",
+    "Drawdown": "-45.00",
+    "Ganho Max.": "0.00",
+    "Perda Max.": "0.00",
+    "TET": "2h10min",
+    "Total": "-19.035.00",
+    "total_investido": "172440.00"
+  }
+]
+
+// 1) Função que agrupa os dados por dia (ex.: '11/03/2025'):
+function agruparPorData(tradeDataArray) {
+    const agrupado = {};
+
+    tradeDataArray.forEach(op => {
+      const dia = op.Abertura.split(' ')[0];
+
+      if (!agrupado[dia]) {
+        agrupado[dia] = {
+          day: "",
+          detalhes: []
         };
+      }
+      agrupado[dia].detalhes.push(`
+  <strong>Abertura:</strong> ${op.Abertura}<br>
+  <strong>Fechamento:</strong> ${op.Fechamento}<br>
+  <strong>Preço Compra:</strong> ${op["Preco Compra"]}<br>
+  <strong>Preço Venda:</strong> ${op["Preco Venda"]}<br>
+  <strong>Res. Operação:</strong> ${op["Res. Operacao"]}<br>
+  <strong>TET:</strong> ${op.TET}<br>
+  <strong>Total Geral:</strong> ${op.Total}
+`);
 
-        function generateCards() {
-            const container = document.getElementById("cards-container");
-            container.innerHTML = "";
-            Object.keys(tradeData).forEach(date => {
-                const data = tradeData[date];
-                const card = document.createElement("div");
-                card.className = "card";
-                card.innerHTML = `<h2>${data.day}</h2><p><strong>Data: ${date}</strong></p>`;
-                card.onclick = () => openModal(date);
-                container.appendChild(card);
-            });
+
+
+    });
+
+    Object.keys(agrupado).forEach(d => {
+      agrupado[d].day = `Operações de ${d}`;
+    });
+
+    return agrupado;
+  }
+
+// 2) Agora converta seu array gigante no objeto que o script atual precisa:
+const tradeData = agruparPorData(tradeDataArray);
+
+function generateCards() {
+    const container = document.getElementById("cards-container");
+    container.innerHTML = "";
+
+    Object.keys(tradeData).forEach(date => {
+        const data = tradeData[date];
+        const card = document.createElement("div");
+        card.className = "card";
+
+        // Aqui adicionamos as linhas fixas de Lucro e Total Investido
+        card.innerHTML = `
+            <h2><strong>Data: ${date}</strong></h2>
+            <p><strong>Total Investido:</strong> 517.680,00</p>
+             <p><strong>Lucro:</strong> 57.015,00</p>
+        `;
+
+        // Quando clicar, abre o modal
+        card.onclick = () => openModal(date);
+        container.appendChild(card);
+    });
+}
+
+    
+ 
+function openModal(date) {
+    const modal = document.getElementById("modal");
+    const modalBody = document.getElementById("modal-body");
+    modalBody.innerHTML = "";
+    tradeData[date].detalhes.forEach(detalhe => {
+        modalBody.innerHTML += `<p>${detalhe}</p><hr>`;
+    });
+    modal.style.display = "flex";
+}
+
+function closeModal() {
+    document.getElementById("modal").style.display = "none";
+}
+
+// Exemplo para gerar o gráfico (se você tiver outro objeto de resultados, adapte):
+function generateChart() {
+    const labels = ["11/03/2025", "12/03/2025", "13/03/2025", "14/03/2025"];
+    // Exemplo: se quiser puxar do array, calcule a soma do dia etc.
+    const data = [ -100, -200, 300, 150 ]; // ou crie dinamicamente
+
+    const ctx = document.getElementById('resultsChart').getContext('2d');
+    new Chart(ctx, {
+        type: 'line',
+        data: {
+            labels: labels,
+            datasets: [{
+                label: 'Resultado do Dia',
+                data: data,
+                borderColor: 'rgba(76, 175, 80, 1)',
+                backgroundColor: 'rgba(76, 175, 80, 0.2)',
+                fill: true,
+                tension: 0.3
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            scales: {
+                y: { beginAtZero: true }
+            }
         }
-        
-        function openModal(date) {
-            const modal = document.getElementById("modal");
-            const modalBody = document.getElementById("modal-body");
-            modalBody.innerHTML = "";
-            tradeData[date].detalhes.forEach(detalhe => {
-                modalBody.innerHTML += `<p>${detalhe}</p>`;
-            });
-            modal.style.display = "flex";
-        }
-        
-        function closeModal() {
-            document.getElementById("modal").style.display = "none";
-        }
-        function generateChart() {
-            const labels = Object.keys(tradeDatas);
-            const data = labels.map(date => tradeDatas[date].resultado);
-            
-            const ctx = document.getElementById('resultsChart').getContext('2d');
-            new Chart(ctx, {
-                type: 'line',
-                data: {
-                    labels: labels,
-                    datasets: [{
-                        label: 'Resultado do Dia',
-                        data: data,
-                        borderColor: 'rgba(76, 175, 80, 1)',
-                        backgroundColor: 'rgba(76, 175, 80, 0.2)',
-                        fill: true,
-                        tension: 0.3
-                    }]
-                },
-                options: {
-                    responsive: true,
-                    maintainAspectRatio: false,
-                    scales: {
-                        y: {
-                            beginAtZero: true
-                        }
-                    }
-                }
-            });
-        }
-        
-        generateCards();
-        generateChart();
+    });
+}
+
+
+    generateCards();
+    generateChart();
     
     </script>
 </body>
