@@ -132,8 +132,6 @@
     />
     <div class="title">WDOFUT - Dashboard</div>
     <select id="periodSelect">
-      <option value="12meses">12 Meses</option>
-      <option value="6meses">6 Meses</option>
       <option value="semanal">Semanal</option>
     </select>
     <select id="diaSelect">
@@ -181,96 +179,81 @@
   <script>
     // Dados fictícios: Repare que cada período tem "terça", "quarta", "quinta", "sexta"!
     var wdofutData = {
-      "12meses": {
-        "terça": {
-          stats: { lucro: 15000, compra: 120, venda: 120, totalOp: 40, pos: 30, neg: 10,
-                   pctGanho: "75%", pctPerda: "25%", maiorLucro: 2000, maiorPrejuizo: 1000,
-                   seqGanho: 5, seqPerda: 2 },
-          chartData: [1200, 900, 1500, 2000, 1800, 2200, 2500, 2700, 1300, 900, 1600, 2100],
-          label: ["Mai", "Jun", "Jul", "Ago", "Set", "Out", "Nov", "Dez", "Jan", "Fev", "Mar", "Abr"]
-        },
-        "quarta": {
-          stats: { lucro: 18000, compra: 140, venda: 140, totalOp: 45, pos: 35, neg: 10,
-                   pctGanho: "77.77%", pctPerda: "22.23%", maiorLucro: 2500, maiorPrejuizo: 1200,
-                   seqGanho: 7, seqPerda: 2 },
-          chartData: [900, 1200, 1800, 2300, 2000, 2100, 2800, 2600, 1500, 1000, 700, 1900],
-          label: ["Mai", "Jun", "Jul", "Ago", "Set", "Out", "Nov", "Dez", "Jan", "Fev", "Mar", "Abr"]
-        },
-        "quinta": {
-          stats: { lucro: 21000, compra: 160, venda: 160, totalOp: 50, pos: 40, neg: 10,
-                   pctGanho: "80%", pctPerda: "20%", maiorLucro: 3000, maiorPrejuizo: 1500,
-                   seqGanho: 8, seqPerda: 1 },
-          chartData: [1000, 1100, 1900, 2400, 2500, 3100, 3000, 2700, 1800, 1300, 1900, 2200],
-          label: ["Mai", "Jun", "Jul", "Ago", "Set", "Out", "Nov", "Dez", "Jan", "Fev", "Mar", "Abr"]
-        },
-        "sexta": {
-          stats: { lucro: 25000, compra: 180, venda: 180, totalOp: 60, pos: 45, neg: 15,
-                   pctGanho: "75%", pctPerda: "25%", maiorLucro: 4000, maiorPrejuizo: 2000,
-                   seqGanho: 6, seqPerda: 2 },
-          chartData: [1100, 1500, 2000, 3000, 2500, 3200, 2900, 3500, 1900, 2100, 2200, 2700],
-          label: ["Mai", "Jun", "Jul", "Ago", "Set", "Out", "Nov", "Dez", "Jan", "Fev", "Mar", "Abr"]
-        }
-      },
-      "6meses": {
-        "terça": {
-          stats: { lucro: 9000, compra: 80, venda: 80, totalOp: 30, pos: 20, neg: 10,
-                   pctGanho: "66.66%", pctPerda: "33.34%", maiorLucro: 1500, maiorPrejuizo: 900,
-                   seqGanho: 4, seqPerda: 1 },
-          chartData: [600, 1200, 800, 1500, 700, 900],
-          label: ["Nov", "Dez", "Jan", "Fev", "Mar", "Abr"]
-        },
-        "quarta": {
-          stats: { lucro: 10000, compra: 90, venda: 90, totalOp: 30, pos: 22, neg: 8,
-                   pctGanho: "73.33%", pctPerda: "26.67%", maiorLucro: 1600, maiorPrejuizo: 1000,
-                   seqGanho: 5, seqPerda: 2 },
-          chartData: [900, 1400, 1100, 1700, 600, 1300],
-          label: ["Nov", "Dez", "Jan", "Fev", "Mar", "Abr"]
-        },
-        "quinta": {
-          stats: { lucro: 12000, compra: 100, venda: 100, totalOp: 35, pos: 28, neg: 7,
-                   pctGanho: "80%", pctPerda: "20%", maiorLucro: 2000, maiorPrejuizo: 1100,
-                   seqGanho: 6, seqPerda: 1 },
-          chartData: [1000, 1200, 1300, 1800, 1700, 2000],
-          label: ["Nov", "Dez", "Jan", "Fev", "Mar", "Abr"]
-        },
-        "sexta": {
-          stats: { lucro: 15000, compra: 110, venda: 110, totalOp: 40, pos: 30, neg: 10,
-                   pctGanho: "75%", pctPerda: "25%", maiorLucro: 2500, maiorPrejuizo: 1400,
-                   seqGanho: 7, seqPerda: 2 },
-          chartData: [1100, 1300, 1400, 1900, 2100, 2500],
-          label: ["Nov", "Dez", "Jan", "Fev", "Mar", "Abr"]
-        }
-      },
-      "semanal": {
-        "terça": {
-          stats: { lucro: 2000, compra: 20, venda: 20, totalOp: 8, pos: 6, neg: 2,
-                   pctGanho: "75%", pctPerda: "25%", maiorLucro: 500, maiorPrejuizo: 300,
-                   seqGanho: 3, seqPerda: 1 },
-          chartData: [500, 300, 600, 600],
-          label: ["Semana 1", "Semana 2", "Semana 3", "Semana 4"]
-        },
-        "quarta": {
-          stats: { lucro: 3000, compra: 22, venda: 22, totalOp: 10, pos: 7, neg: 3,
-                   pctGanho: "70%", pctPerda: "30%", maiorLucro: 700, maiorPrejuizo: 400,
-                   seqGanho: 4, seqPerda: 1 },
-          chartData: [600, 900, 800, 700],
-          label: ["Semana 1", "Semana 2", "Semana 3", "Semana 4"]
-        },
-        "quinta": {
-          stats: { lucro: 3500, compra: 25, venda: 25, totalOp: 12, pos: 9, neg: 3,
-                   pctGanho: "75%", pctPerda: "25%", maiorLucro: 800, maiorPrejuizo: 400,
-                   seqGanho: 5, seqPerda: 1 },
-          chartData: [800, 700, 1200, 800],
-          label: ["Semana 1", "Semana 2", "Semana 3", "Semana 4"]
-        },
-        "sexta": {
-          stats: { lucro: 4500, compra: 30, venda: 30, totalOp: 15, pos: 10, neg: 5,
-                   pctGanho: "66.66%", pctPerda: "33.34%", maiorLucro: 1000, maiorPrejuizo: 500,
-                   seqGanho: 5, seqPerda: 2 },
-          chartData: [1000, 1200, 1300, 1000],
-          label: ["Semana 1", "Semana 2", "Semana 3", "Semana 4"]
-        }
-      }
+      "semanal":{
+  "terça": {
+    "stats": {
+      "lucro": 1080,
+      "compra": 24,
+      "venda": 24,
+      "totalOp": 8,
+      "pos": 7,
+      "neg": 1,
+      "pctGanho": "87.50%",
+      "pctPerda": "12.50%",
+      "maiorLucro": 450,
+      "maiorPrejuizo": 555,
+      "seqGanho": 5,
+      "seqPerda": 1
+    },
+    "chartData": [500, 300, 600, 600],
+    "label": ["Semana 1", "Semana 2", "Semana 3", "Semana 4"]
+  },
+  "quarta": {
+    "stats": {
+      "lucro": 1065,
+      "compra": 39,
+      "venda": 39,
+      "totalOp": 13,
+      "pos": 11,
+      "neg": 2,
+      "pctGanho": "84.62%",
+      "pctPerda": "15.38%",
+      "maiorLucro": 210,
+      "maiorPrejuizo": 315,
+      "seqGanho": 9,
+      "seqPerda": 1
+    },
+    "chartData": [600, 900, 800, 700],
+    "label": ["Semana 1", "Semana 2", "Semana 3", "Semana 4"]
+  },
+  "quinta": {
+    "stats": {
+      "lucro": 208.05,
+      "compra": 27,
+      "venda": 27,
+      "totalOp": 9,
+      "pos": 5,
+      "neg": 4,
+      "pctGanho": "55.56%",
+      "pctPerda": "44.44%",
+      "maiorLucro": 195,
+      "maiorPrejuizo": 240,
+      "seqGanho": 5,
+      "seqPerda": 3
+    },
+    "chartData": [800, 700, 1200, 800],
+    "label": ["Semana 1", "Semana 2", "Semana 3", "Semana 4"]
+  },
+  "sexta": {
+    "stats": {
+      "lucro": 330,
+      "compra": 9,
+      "venda": 6,
+      "totalOp": 3,
+      "pos": 2,
+      "neg": 1,
+      "pctGanho": "66.67%",
+      "pctPerda": "33.33%",
+      "maiorLucro": 360,
+      "maiorPrejuizo": 210,
+      "seqGanho": 2,
+      "seqPerda": 1
+    },
+    "chartData": [1000, 1200, 1300, 1000],
+    "label": ["Semana 1", "Semana 2", "Semana 3", "Semana 4"]
+  }
+}
+
     };
 
     var periodSelect = document.getElementById("periodSelect");
