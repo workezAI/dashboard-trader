@@ -21,6 +21,7 @@
       background-color: #ffffff;
       box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
       margin-bottom: 10px;
+      flex-wrap: wrap; /* permite quebrar linha em telas menores */
     }
     header img {
       height: 40px;
@@ -36,13 +37,17 @@
       border: 1px solid #ccc;
       border-radius: 4px;
       margin-left: 10px;
+      margin-top: 5px;
     }
 
     .container {
       display: flex;
       flex-direction: row;
-      height: calc(100vh - 90px);
+      /* height: calc(100vh - 90px); REMOVIDO para facilitar layout responsivo */
+      flex-wrap: wrap; /* permitir quebrar coluna/linha em telas pequenas */
     }
+
+    /* Coluna esquerda e direita ficam lado a lado em telas grandes */
     .left {
       width: 65%;
       padding: 20px;
@@ -55,6 +60,20 @@
       box-shadow: -2px 0 4px rgba(0, 0, 0, 0.1);
       overflow-y: auto;
     }
+
+    /* Ajustes de layout em telas menores */
+    @media (max-width: 768px) {
+      .container {
+        flex-direction: column;
+      }
+      .left,
+      .right {
+        width: 100%;
+        margin-bottom: 20px;
+        box-shadow: none;
+      }
+    }
+
     .algorithm {
       background-color: #ffffff;
       border: 1px solid #ddd;
@@ -68,6 +87,7 @@
     .algorithm p {
       margin-bottom: 5px;
     }
+
     .box {
       background-color: #ffffff;
       border: 1px solid #ddd;
@@ -85,6 +105,7 @@
     canvas {
       display: block;
       margin: 0 auto;
+      max-width: 100%;
     }
     .positive {
       color: green;
@@ -273,7 +294,6 @@
 
     function drawChart(chartData, labels) {
       ctx.clearRect(0, 0, canvas.width, canvas.height);
-
       var width = canvas.width;
       var height = canvas.height;
 
@@ -352,9 +372,8 @@
     }
 
     function updateDashboard() {
-      var period = periodSelect.value; // 12meses, 6meses, semanal
-      var day = diaSelect.value;       // terça, quarta, quinta, sexta
-
+      var period = periodSelect.value;
+      var day = diaSelect.value;
       var chosen = wdofutData[period][day];
       if (!chosen) return;
       fillStats(chosen.stats);
