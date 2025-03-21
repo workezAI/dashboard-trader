@@ -150,7 +150,7 @@
         <p>Robo que opera a ação de Petobras para compra com estratégia indice de força relativa.</p>
       </div>
       <div class="box">
-        <h3>Resultado no Gráfico</h3>
+        <h3>Gráfico Resultado de operações</h3>
         <div class="chart-container">
           <canvas id="chart" width="800" height="400"></canvas>
         </div>
@@ -195,8 +195,18 @@
       "seqGanho": 5,
       "seqPerda": 1
     },
-    "chartData": [1080, 450],
-    "label": ["lucro", "maior lucro"]
+    "chartData": [
+  165.00,  // 263
+  450.00,  // 264
+  405.00,  // 265
+  120.00,  // 266
+   75.00,  // 267
+ -555.00,  // 268
+   60.00,  // 269
+  360.00   // 270
+]
+,
+    "label":[]
   },
   "quarta": {
     "stats": {
@@ -213,8 +223,22 @@
       "seqGanho": 9,
       "seqPerda": 1
     },
-    "chartData": [1065, 210],
-    "label": ["lucro", "maior lucro"]
+    "chartData": [
+  210.00,   // Op 271
+  150.00,   // Op 272
+  120.00,   // Op 273
+  105.00,   // Op 274
+  195.00,   // Op 275
+  180.00,   // Op 276
+  105.00,   // Op 277
+  150.00,   // Op 278
+  165.00,   // Op 279
+ -315.00,   // Op 280
+  150.00,   // Op 281
+  105.00,   // Op 282
+ -255.00    // Op 283
+],
+    "label": []
   },
   "quinta": {
     "stats": {
@@ -231,27 +255,28 @@
       "seqGanho": 5,
       "seqPerda": 3
     },
-    "chartData": [208.05, 195],
-    "label": ["lucro", "maior lucro"]
+    "chartData": [ -240.00, 150.00, 195.00, 90.00, 90.00, 120.00, -75.00, -120.00, -1950.00 ],
+    "label": []
   },
-  "sexta": {
-    "stats": {
-      "lucro": 330,
-      "compra": 9,
-      "venda": 6,
-      "totalOp": 3,
-      "pos": 2,
-      "neg": 1,
-      "pctGanho": "66.67%",
-      "pctPerda": "33.33%",
-      "maiorLucro": 360,
-      "maiorPrejuizo": 210,
-      "seqGanho": 2,
-      "seqPerda": 1
-    },
-    "chartData": [330, 360],
-    "label": ["lucro", "maior lucro"]
-  }
+ "sexta": {
+  "stats": {
+    "lucro": 330,
+    "compra": 9,
+    "venda": 6,
+    "totalOp": 3,
+    "pos": 2,
+    "neg": 1,
+    "pctGanho": "66.67%",
+    "pctPerda": "33.33%",
+    "maiorLucro": 360,
+    "maiorPrejuizo": 210,
+    "seqGanho": 2,
+    "seqPerda": 1
+  },
+  "chartData": [ 360, 180, -210],
+  "label": []
+}
+
 }
 
     };
@@ -276,68 +301,77 @@
     var ctx = canvas.getContext("2d");
 
     function drawChart(chartData, labels) {
-      ctx.clearRect(0, 0, canvas.width, canvas.height);
-      var width = canvas.width;
-      var height = canvas.height;
+  ctx.clearRect(0, 0, canvas.width, canvas.height);
+  var width = canvas.width;
+  var height = canvas.height;
 
-      var marginLeft = 60;
-      var marginRight = 20;
-      var marginTop = 20;
-      var marginBottom = 40;
+  var marginLeft = 60;
+  var marginRight = 20;
+  var marginTop = 20;
+  var marginBottom = 40;
 
-      var chartWidth = width - marginLeft - marginRight;
-      var chartHeight = height - marginTop - marginBottom;
+  var chartWidth = width - marginLeft - marginRight;
+  var chartHeight = height - marginTop - marginBottom;
 
-      // Fundo branco
-      ctx.fillStyle = "#ffffff";
-      ctx.fillRect(0, 0, width, height);
+  // Fundo branco
+  ctx.fillStyle = "#ffffff";
+  ctx.fillRect(0, 0, width, height);
 
-      // Eixo X
-      ctx.strokeStyle = "#000";
-      ctx.beginPath();
-      ctx.moveTo(marginLeft, marginTop + chartHeight);
-      ctx.lineTo(marginLeft + chartWidth, marginTop + chartHeight);
-      ctx.stroke();
+  // Determinar valores máximo e mínimo
+  var maxValue = Math.max.apply(null, chartData);
+  var minValue = Math.min.apply(null, chartData);
+  var absMax = Math.max(Math.abs(maxValue), Math.abs(minValue));
+  var range = absMax * 2 || 1;
 
-      // Eixo Y
-      ctx.beginPath();
-      ctx.moveTo(marginLeft, marginTop);
-      ctx.lineTo(marginLeft, marginTop + chartHeight);
-      ctx.stroke();
+  // Determinar posição da linha do zero
+  var zeroY = marginTop + (absMax / range) * chartHeight;
 
-      var maxValue = Math.max.apply(null, chartData);
-      var minValue = Math.min.apply(null, chartData);
-      var range = maxValue - minValue || 1;
+  // Eixo X (linha do zero)
+  ctx.strokeStyle = "#000";
+  ctx.beginPath();
+  ctx.moveTo(marginLeft, zeroY);
+  ctx.lineTo(marginLeft + chartWidth, zeroY);
+  ctx.stroke();
 
-      var barWidth = chartWidth / (chartData.length * 2);
-      var barGap = barWidth;
+  // Eixo Y
+  ctx.beginPath();
+  ctx.moveTo(marginLeft, marginTop);
+  ctx.lineTo(marginLeft, marginTop + chartHeight);
+  ctx.stroke();
 
-      for (var i = 0; i < chartData.length; i++) {
-        var value = chartData[i];
-        var barHeight = ((value - minValue) / range) * chartHeight;
-        var x = marginLeft + (barWidth + barGap) * i;
-        var y = marginTop + (chartHeight - barHeight);
+  var barWidth = chartWidth / (chartData.length * 2);
+  var barGap = barWidth;
 
-        ctx.fillStyle = "green";
-        ctx.fillRect(x, y, barWidth, barHeight);
+  for (var i = 0; i < chartData.length; i++) {
+    var value = chartData[i];
+    var barHeight = Math.abs((value / range) * chartHeight);
+    var x = marginLeft + (barWidth + barGap) * i;
+    var y = value >= 0 ? zeroY - barHeight : zeroY;
 
-        ctx.fillStyle = "#000";
-        ctx.font = "14px Arial";
-        ctx.textAlign = "center";
-        ctx.textBaseline = "bottom";
-        ctx.fillText(value, x + barWidth / 2, y - 5);
-      }
+    // Cor: verde se positivo, vermelho se negativo
+    ctx.fillStyle = value >= 0 ? "green" : "red";
+    ctx.fillRect(x, y, barWidth, barHeight);
 
-      ctx.fillStyle = "#000";
-      ctx.textAlign = "center";
-      ctx.textBaseline = "top";
-      ctx.font = "14px Arial";
-      for (var j = 0; j < labels.length; j++) {
-        var lx = marginLeft + (barWidth + barGap) * j + barWidth / 2;
-        var ly = marginTop + chartHeight + 5;
-        ctx.fillText(labels[j], lx, ly);
-      }
-    }
+    // Valor numérico acima/abaixo da barra
+    ctx.fillStyle = "#000";
+    ctx.font = "14px Arial";
+    ctx.textAlign = "center";
+    ctx.textBaseline = value >= 0 ? "bottom" : "top";
+    ctx.fillText(value, x + barWidth / 2, value >= 0 ? y - 5 : y + barHeight + 5);
+  }
+
+  // Rótulos
+  ctx.fillStyle = "#000";
+  ctx.textAlign = "center";
+  ctx.textBaseline = "top";
+  ctx.font = "14px Arial";
+  for (var j = 0; j < labels.length; j++) {
+    var lx = marginLeft + (barWidth + barGap) * j + barWidth / 2;
+    var ly = marginTop + chartHeight + 5;
+    ctx.fillText(labels[j], lx, ly);
+  }
+}
+
 
     function fillStats(stats) {
       statLucro.textContent = stats.lucro;
