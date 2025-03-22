@@ -160,7 +160,14 @@
     <div class="right">
       <div class="box stats" id="statsBox">
         <h3>Resumo de Estatística</h3>
-        <p><strong>Lucro:</strong> <span id="stat-lucro" class="positive"></span></p>
+        <p id="lucroBox" style="display: none;">
+          <strong>Lucro:</strong> <span id="stat-lucro" class="positive"></span>
+        </p>
+        <p id="prejuizoBox" style="display: none;">
+          <strong>Prejuízo:</strong> <span id="stat-prejuizo" class="negative"></span>
+        </p>
+        
+        
         <p><strong>ContratosCompra:</strong> <span id="stat-compra"></span></p>
         <p><strong>ContratosVenda:</strong> <span id="stat-venda"></span></p>
         <p><strong>TotalOperacoes:</strong> <span id="stat-totalOp"></span></p>
@@ -242,20 +249,20 @@
   },
   "quinta": {
     "stats": {
-      "lucro": 208.05,
+      "prejuizo": -1500,
       "compra": 27,
       "venda": 27,
       "totalOp": 9,
       "pos": 5,
       "neg": 4,
-      "pctGanho": "55.56%",
-      "pctPerda": "44.44%",
+      "pctGanho": "66.66%",
+      "pctPerda": "33.33%",
       "maiorLucro": 195,
-      "maiorPrejuizo": 240,
+      "maiorPrejuizo": 1950,
       "seqGanho": 5,
       "seqPerda": 3
     },
-    "chartData": [ -240.00, 150.00, 195.00, 90.00, 90.00, 120.00, -75.00, -120.00, -195.00 ],
+    "chartData": [ -240.00, 150.00, 195.00, 90.00, 90.00, 120.00, -75.00, -120.00, -1950.00 ],
     "label": []
   },
  "sexta": {
@@ -283,6 +290,8 @@
 
     var periodSelect = document.getElementById("periodSelect");
     var diaSelect = document.getElementById("diaSelect");
+    const statPrejuizo = document.getElementById("stat-prejuizo");
+const prejuizoBox = document.getElementById("prejuizoBox");
 
     var statLucro = document.getElementById("stat-lucro");
     var statCompra = document.getElementById("stat-compra");
@@ -374,7 +383,20 @@
 
 
     function fillStats(stats) {
-      statLucro.textContent = stats.lucro;
+      if (stats.lucro && stats.lucro > 0) {
+    lucroBox.style.display = "block";
+    statLucro.textContent = stats.lucro;
+  } else {
+    lucroBox.style.display = "none";
+  }
+
+  // Mostrar ou esconder prejuízo
+  if (stats.prejuizo && stats.prejuizo < 0) {
+    prejuizoBox.style.display = "block";
+    statPrejuizo.textContent = stats.prejuizo;
+  } else {
+    prejuizoBox.style.display = "none";
+  }
       statCompra.textContent = stats.compra;
       statVenda.textContent = stats.venda;
       statTotalOp.textContent = stats.totalOp;
