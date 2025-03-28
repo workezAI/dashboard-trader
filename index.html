@@ -183,257 +183,187 @@
     </div>
   </div>
 
-  <script>
-    // Dados fictícios: Repare que cada período tem "terça", "quarta", "quinta", "sexta"!
-    var wdofutData = {
-      "semanal":{
-  "terça": {
-    "stats": {
-      "lucro": 1080,
-      "compra": 24,
-      "venda": 24,
-      "totalOp": 8,
-      "pos": 7,
-      "neg": 1,
-      "pctGanho": "87.50%",
-      "pctPerda": "12.50%",
-      "maiorLucro": 450,
-      "maiorPrejuizo": 555,
-      "seqGanho": 5,
-      "seqPerda": 1
-    },
-    "chartData": [
-  165.00,  // 263
-  450.00,  // 264
-  405.00,  // 265
-  120.00,  // 266
-   75.00,  // 267
- -555.00,  // 268
-   60.00,  // 269
-  360.00   // 270
-]
-,
-    "label":[]
-  },
-  "quarta": {
-    "stats": {
-      "lucro": 1065,
-      "compra": 39,
-      "venda": 39,
-      "totalOp": 13,
-      "pos": 11,
-      "neg": 2,
-      "pctGanho": "84.62%",
-      "pctPerda": "15.38%",
-      "maiorLucro": 210,
-      "maiorPrejuizo": 315,
-      "seqGanho": 9,
-      "seqPerda": 1
-    },
-    "chartData": [
-  210.00,   // Op 271
-  150.00,   // Op 272
-  120.00,   // Op 273
-  105.00,   // Op 274
-  195.00,   // Op 275
-  180.00,   // Op 276
-  105.00,   // Op 277
-  150.00,   // Op 278
-  165.00,   // Op 279
- -315.00,   // Op 280
-  150.00,   // Op 281
-  105.00,   // Op 282
- -255.00    // Op 283
-],
-    "label": []
-  },
-  "quinta": {
-    "stats": {
-      "prejuizo": -1500,
-      "compra": 27,
-      "venda": 27,
-      "totalOp": 9,
-      "pos": 5,
-      "neg": 4,
-      "pctGanho": "66.66%",
-      "pctPerda": "33.33%",
-      "maiorLucro": 195,
-      "maiorPrejuizo": 1950,
-      "seqGanho": 5,
-      "seqPerda": 3
-    },
-    "chartData": [ -240.00, 150.00, 195.00, 90.00, 90.00, 120.00,120.00, -75.00, -1950.00 ],
-    "label": []
-  },
- "sexta": {
-  "stats": {
-    "lucro": 330,
-    "compra": 9,
-    "venda": 6,
-    "totalOp": 3,
-    "pos": 2,
-    "neg": 1,
-    "pctGanho": "66.67%",
-    "pctPerda": "33.33%",
-    "maiorLucro": 360,
-    "maiorPrejuizo": 210,
-    "seqGanho": 2,
-    "seqPerda": 1
-  },
-  "chartData": [ 360, 180, -210],
-  "label": []
-}
-
-}
-
-    };
-
-    var periodSelect = document.getElementById("periodSelect");
-    var diaSelect = document.getElementById("diaSelect");
+  <script type="module">
+    import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js/+esm';
+  
+    const supabase = createClient(
+      'https://eunburxiqtzftppqvxtr.supabase.co',
+      'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImV1bmJ1cnhpcXR6ZnRwcHF2eHRyIiwicm9sZSI6ImFub24iLCJpYXQiOjE3MjU1Njc3MzEsImV4cCI6MjA0MTE0MzczMX0.y-EgwTJ-uEzbLa_bTSzbEN10dSyTVrSJ27zrl51MLKc'
+    );
+  
+    const diaSelect = document.getElementById("diaSelect");
+  
+    const statLucro = document.getElementById("stat-lucro");
+    const statCompra = document.getElementById("stat-compra");
+    const statVenda = document.getElementById("stat-venda");
+    const statTotalOp = document.getElementById("stat-totalOp");
+    const statPos = document.getElementById("stat-pos");
+    const statNeg = document.getElementById("stat-neg");
+    const statGanho = document.getElementById("stat-ganho");
+    const statPerda = document.getElementById("stat-perda");
+    const statMaiorLucro = document.getElementById("stat-maiorLucro");
+    const statMaiorPrejuizo = document.getElementById("stat-maiorPrejuizo");
+    const statSeqGanho = document.getElementById("stat-seqGanho");
+    const statSeqPerda = document.getElementById("stat-seqPerda");
+  
+    const lucroBox = document.getElementById("lucroBox");
+    const prejuizoBox = document.getElementById("prejuizoBox");
     const statPrejuizo = document.getElementById("stat-prejuizo");
-const prejuizoBox = document.getElementById("prejuizoBox");
-
-    var statLucro = document.getElementById("stat-lucro");
-    var statCompra = document.getElementById("stat-compra");
-    var statVenda = document.getElementById("stat-venda");
-    var statTotalOp = document.getElementById("stat-totalOp");
-    var statPos = document.getElementById("stat-pos");
-    var statNeg = document.getElementById("stat-neg");
-    var statGanho = document.getElementById("stat-ganho");
-    var statPerda = document.getElementById("stat-perda");
-    var statMaiorLucro = document.getElementById("stat-maiorLucro");
-    var statMaiorPrejuizo = document.getElementById("stat-maiorPrejuizo");
-    var statSeqGanho = document.getElementById("stat-seqGanho");
-    var statSeqPerda = document.getElementById("stat-seqPerda");
-
-    var canvas = document.getElementById("chart");
-    var ctx = canvas.getContext("2d");
-
-    function drawChart(chartData, labels) {
-  ctx.clearRect(0, 0, canvas.width, canvas.height);
-  var width = canvas.width;
-  var height = canvas.height;
-
-  var marginLeft = 60;
-  var marginRight = 20;
-  var marginTop = 20;
-  var marginBottom = 40;
-
-  var chartWidth = width - marginLeft - marginRight;
-  var chartHeight = height - marginTop - marginBottom;
-
-  // Fundo branco
-  ctx.fillStyle = "#ffffff";
-  ctx.fillRect(0, 0, width, height);
-
-  // Determinar valores máximo e mínimo
-  var maxValue = Math.max.apply(null, chartData);
-  var minValue = Math.min.apply(null, chartData);
-  var absMax = Math.max(Math.abs(maxValue), Math.abs(minValue));
-  var range = absMax * 2 || 1;
-
-  // Determinar posição da linha do zero
-  var zeroY = marginTop + (absMax / range) * chartHeight;
-
-  // Eixo X (linha do zero)
-  ctx.strokeStyle = "#000";
-  ctx.beginPath();
-  ctx.moveTo(marginLeft, zeroY);
-  ctx.lineTo(marginLeft + chartWidth, zeroY);
-  ctx.stroke();
-
-  // Eixo Y
-  ctx.beginPath();
-  ctx.moveTo(marginLeft, marginTop);
-  ctx.lineTo(marginLeft, marginTop + chartHeight);
-  ctx.stroke();
-
-  var barWidth = chartWidth / (chartData.length * 2);
-  var barGap = barWidth;
-
-  for (var i = 0; i < chartData.length; i++) {
-    var value = chartData[i];
-    var barHeight = Math.abs((value / range) * chartHeight);
-    var x = marginLeft + (barWidth + barGap) * i;
-    var y = value >= 0 ? zeroY - barHeight : zeroY;
-
-    // Cor: verde se positivo, vermelho se negativo
-    ctx.fillStyle = value >= 0 ? "green" : "red";
-    ctx.fillRect(x, y, barWidth, barHeight);
-
-    // Valor numérico acima/abaixo da barra
-    ctx.fillStyle = "#000";
-    ctx.font = "14px Arial";
-    ctx.textAlign = "center";
-    ctx.textBaseline = value >= 0 ? "bottom" : "top";
-    ctx.fillText(value, x + barWidth / 2, value >= 0 ? y - 5 : y + barHeight + 5);
-  }
-
-  // Rótulos
-  ctx.fillStyle = "#000";
-  ctx.textAlign = "center";
-  ctx.textBaseline = "top";
-  ctx.font = "14px Arial";
-  for (var j = 0; j < labels.length; j++) {
-    var lx = marginLeft + (barWidth + barGap) * j + barWidth / 2;
-    var ly = marginTop + chartHeight + 5;
-    ctx.fillText(labels[j], lx, ly);
-  }
-}
-
-
+  
+    const canvas = document.getElementById("chart");
+    const ctx = canvas.getContext("2d");
+  
+    let allData = {};
+  
+    async function fetchData() {
+      const { data, error } = await supabase
+        .from("bottraderDash")
+        .select("data, dados")
+        .order("data", { ascending: false });
+  
+      if (error) return;
+  
+      allData = data.reduce((acc, item) => {
+        let parsedData = item.dados;
+        if (typeof parsedData === "string") {
+          try {
+            parsedData = JSON.parse(parsedData);
+          } catch (e) {
+            parsedData = {};
+          }
+        }
+        acc[item.data] = parsedData;
+        return acc;
+      }, {});
+  
+      updateDaySelect();
+  
+      const firstDate = Object.keys(allData)[0];
+      if (firstDate) {
+        diaSelect.value = firstDate;
+        updateDashboard(firstDate);
+      }
+    }
+  
+    function updateDaySelect() {
+      diaSelect.innerHTML = '';
+      Object.keys(allData).forEach(date => {
+        const option = document.createElement('option');
+        option.value = date;
+        option.textContent = date;
+        diaSelect.appendChild(option);
+      });
+    }
+  
     function fillStats(stats) {
-      if (stats.lucro && stats.lucro > 0) {
-    lucroBox.style.display = "block";
-    statLucro.textContent = stats.lucro;
-  } else {
-    lucroBox.style.display = "none";
-  }
-
-  // Mostrar ou esconder prejuízo
-  if (stats.prejuizo && stats.prejuizo < 0) {
-    prejuizoBox.style.display = "block";
-    statPrejuizo.textContent = stats.prejuizo;
-  } else {
-    prejuizoBox.style.display = "none";
-  }
-      statCompra.textContent = stats.compra;
-      statVenda.textContent = stats.venda;
-      statTotalOp.textContent = stats.totalOp;
-      statPos.textContent = stats.pos;
-      statNeg.textContent = stats.neg;
-      statGanho.textContent = stats.pctGanho;
-      statPerda.textContent = stats.pctPerda;
-      statMaiorLucro.textContent = stats.maiorLucro;
-      statMaiorPrejuizo.textContent = stats.maiorPrejuizo;
-      statSeqGanho.textContent = stats.seqGanho;
-      statSeqPerda.textContent = stats.seqPerda;
+      if (stats.Lucro > 0) {
+        lucroBox.style.display = "block";
+        statLucro.textContent = stats.Lucro;
+      } else {
+        lucroBox.style.display = "none";
+      }
+  
+      if (stats.Lucro < 0) {
+        prejuizoBox.style.display = "block";
+        statPrejuizo.textContent = stats.Lucro;
+      } else {
+        prejuizoBox.style.display = "none";
+      }
+  
+      statCompra.textContent = stats.ContratosCompra;
+      statVenda.textContent = stats.ContratosVenda;
+      statTotalOp.textContent = stats.TotalOperacoes;
+      statPos.textContent = stats.OperacoesPositivas;
+      statNeg.textContent = stats.OperacoesNegativas;
+      statGanho.textContent = stats.PercentualGanho;
+      statPerda.textContent = stats.PercentualPerda;
+      statMaiorLucro.textContent = stats.MaiorLucro;
+      statMaiorPrejuizo.textContent = stats.MaiorPrejuizo;
+      statSeqGanho.textContent = stats.SequenciaGanho;
+      statSeqPerda.textContent = stats.SequenciaPerda;
     }
+  
+    function drawChart(chartData = [], labels = []) {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      const width = canvas.width;
+      const height = canvas.height;
+  
+      const marginLeft = 60, marginRight = 20, marginTop = 20, marginBottom = 40;
+      const chartWidth = width - marginLeft - marginRight;
+      const chartHeight = height - marginTop - marginBottom;
+  
+      ctx.fillStyle = "#ffffff";
+      ctx.fillRect(0, 0, width, height);
+  
+      const maxValue = Math.max(...chartData, 0);
+      const minValue = Math.min(...chartData, 0);
+      const absMax = Math.max(Math.abs(maxValue), Math.abs(minValue));
+      const range = absMax * 2 || 1;
+      const zeroY = marginTop + (absMax / range) * chartHeight;
+  
+      ctx.strokeStyle = "#000";
+      ctx.beginPath();
+      ctx.moveTo(marginLeft, zeroY);
+      ctx.lineTo(marginLeft + chartWidth, zeroY);
+      ctx.stroke();
+  
+      ctx.beginPath();
+      ctx.moveTo(marginLeft, marginTop);
+      ctx.lineTo(marginLeft, marginTop + chartHeight);
+      ctx.stroke();
+  
+      const totalBars = chartData.length || 1;
+const barGap = 10;
+const barWidth = Math.min(40, (chartWidth - (barGap * (totalBars - 1))) / totalBars);
 
-    function updateDashboard() {
-      var period = periodSelect.value;
-      var day = diaSelect.value;
-      var chosen = wdofutData[period][day];
-      if (!chosen) return;
-      fillStats(chosen.stats);
-      drawChart(chosen.chartData, chosen.label);
+  
+      chartData.forEach((value, i) => {
+        const barHeight = Math.abs((value / range) * chartHeight);
+        const x = marginLeft + (barWidth + barGap) * i;
+        const y = value >= 0 ? zeroY - barHeight : zeroY;
+  
+        ctx.fillStyle = value >= 0 ? "green" : "red";
+        ctx.fillRect(x, y, barWidth, barHeight);
+  
+        ctx.fillStyle = "#000";
+        ctx.font = "14px Arial";
+        ctx.textAlign = "center";
+        ctx.textBaseline = value >= 0 ? "bottom" : "top";
+        ctx.fillText(value, x + barWidth / 2, value >= 0 ? y - 5 : y + barHeight + 5);
+      });
+  
+      labels.forEach((label, j) => {
+        const lx = marginLeft + (barWidth + barGap) * j + barWidth / 2;
+        const ly = marginTop + chartHeight + 5;
+        ctx.fillText(label, lx, ly);
+      });
     }
-
-    function resizeCanvas() {
+  
+    function updateDashboard(date) {
+      const stats = allData[date];
+      if (!stats) return;
+  
+      fillStats(stats);
+  
+      // Mostra o gráfico com base no campo 'grafico' ou usa 'Lucro' como fallback
+      const chartData = stats.grafico || [stats.Lucro];
+      drawChart(chartData, []);
+    }
+  
+    window.addEventListener("load", fetchData);
+    window.addEventListener("resize", () => {
       canvas.width = canvas.offsetWidth;
       canvas.height = 400;
-      updateDashboard();
-    }
-
-    window.addEventListener("load", function() {
-      resizeCanvas();
+      const selectedDate = diaSelect.value;
+      updateDashboard(selectedDate);
     });
-    window.addEventListener("resize", function() {
-      resizeCanvas();
+  
+    diaSelect.addEventListener("change", (e) => {
+      updateDashboard(e.target.value);
     });
-
-    periodSelect.addEventListener("change", updateDashboard);
-    diaSelect.addEventListener("change", updateDashboard);
   </script>
+  
+  
+  
 </body>
 </html>
