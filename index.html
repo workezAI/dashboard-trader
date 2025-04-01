@@ -210,64 +210,124 @@
   </div>
 
   <script type="module">
-   function showMessage(text, color = '#333') {
-      const box = document.getElementById('msgBox');
-      box.textContent = text;
-      box.style.backgroundColor = color;
-      box.style.display = 'block';
-      setTimeout(() => {
-        box.style.display = 'none';
-      }, 3000);
-    }
 
-   // Ligar com modal
+const ligarBtn = document.getElementById('ligarBtn');
+const desligarBtn = document.getElementById('desligarBtn');
 const modalLigar = document.getElementById('modalLigar');
-document.getElementById('ligarBtn').addEventListener('click', () => {
-  modalLigar.style.display = 'flex';
+const modal = document.getElementById('modalConfirm');
+
+function showMessage(text, color = '#333') {
+  const box = document.getElementById('msgBox');
+  box.textContent = text;
+  box.style.backgroundColor = color;
+  box.style.display = 'block';
+  setTimeout(() => {
+    box.style.display = 'none';
+  }, 3000);
+}
+
+async function checarStatusAtivo() {
+  const { data, error } = await supabase
+    .from("bottraderDash")
+    .select("ativo")
+    .order("id", { ascending: false })
+    .limit(1)
+    .single();
+
+  if (error || !data) {
+    console.error("Erro ao verificar status:", error);
+    return;
+  }
+
+  const ativo = data.ativo === true;
+
+  // Botão LIGAR
+  ligarBtn.disabled = ativo;
+  ligarBtn.textContent = ativo ? "Estratégia ja está ligado" : "Ligar Estratégia";
+  ligarBtn.style.opacity = ativo ? 0.5 : 1;
+  ligarBtn.style.cursor = ativo ? "not-allowed" : "pointer";
+
+  // Botão DESLIGAR
+  desligarBtn.disabled = !ativo;
+  desligarBtn.textContent = ativo ? "Desligar Estratégia" : "Estratégia ja está desligado";
+  desligarBtn.style.opacity = !ativo ? 0.5 : 1;
+  desligarBtn.style.cursor = !ativo ? "not-allowed" : "pointer";
+}
+
+// LIGAR
+ligarBtn.addEventListener('click', () => {
+  if (!ligarBtn.disabled) modalLigar.style.display = 'flex';
 });
+
 document.getElementById('cancelLigar').addEventListener('click', () => {
   modalLigar.style.display = 'none';
 });
-document.getElementById('confirmLigar').addEventListener('click', () => {
-  fetch('https://webhook.workez.online/webhook/ligar', {
+
+document.getElementById('confirmLigar').addEventListener('click', async () => {
+  const res = await fetch('https://webhook.workez.online/webhook/ligar', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({ status: 'ligado' })
-  })
-  .then(res => {
-    modalLigar.style.display = 'none';
-    res.ok ? showMessage('Robô ligado com sucesso!', '#4CAF50') : showMessage('Erro ao ligar o robô.', '#f44336');
-  })
-  .catch(() => {
-    modalLigar.style.display = 'none';
-    showMessage('Erro de rede ao ligar.', '#f44336');
   });
+
+  modalLigar.style.display = 'none';
+
+  if (res.ok) {
+    const { error } = await supabase
+      .from("bottraderDash")
+      .update({ ativo: true })
+      .order("id", { ascending: false })
+      .limit(1);
+
+    if (error) {
+      showMessage("Ligou, mas erro ao atualizar banco.", "#f44336");
+    } else {
+      showMessage("Robô ligado com sucesso!", "#4CAF50");
+      checarStatusAtivo();
+    }
+  } else {
+    showMessage("Erro ao ligar o robô.", "#f44336");
+  }
 });
 
+// DESLIGAR
+desligarBtn.addEventListener('click', () => {
+  if (!desligarBtn.disabled) modal.style.display = 'flex';
+});
 
-    // Desligar
-    const modal = document.getElementById('modalConfirm');
-    document.getElementById('desligarBtn').addEventListener('click', () => {
-      modal.style.display = 'flex';
-    });
-    document.getElementById('cancelDesligar').addEventListener('click', () => {
-      modal.style.display = 'none';
-    });
-    document.getElementById('confirmDesligar').addEventListener('click', () => {
-      fetch('https://webhook.workez.online/webhook/desligar', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ status: 'desligado' })
-      })
-      .then(res => {
-        modal.style.display = 'none';
-        res.ok ? showMessage('Robô desligado com sucesso!', '#f44336') : showMessage('Erro ao desligar o robô.', '#f44336');
-      })
-      .catch(() => {
-        modal.style.display = 'none';
-        showMessage('Erro de rede ao desligar.', '#f44336');
-      });
-    });
+document.getElementById('cancelDesligar').addEventListener('click', () => {
+  modal.style.display = 'none';
+});
+
+document.getElementById('confirmDesligar').addEventListener('click', async () => {
+  const res = await fetch('https://webhook.workez.online/webhook/desligar', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ status: 'desligado' })
+  });
+
+  modal.style.display = 'none';
+
+  if (res.ok) {
+    const { error } = await supabase
+      .from("bottraderDash")
+      .update({ ativo: false })
+      .order("id", { ascending: false })
+      .limit(1);
+
+    if (error) {
+      showMessage("Desligou, mas erro ao atualizar banco.", "#f44336");
+    } else {
+      showMessage("Robô desligado com sucesso!", "#f44336");
+      checarStatusAtivo();
+    }
+  } else {
+    showMessage("Erro ao desligar o robô.", "#f44336");
+  }
+});
+
+// Verifica status ao carregar a página
+window.addEventListener("load", checarStatusAtivo);
     import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js/+esm';
   
     const supabase = createClient(
@@ -304,7 +364,6 @@ document.getElementById('confirmLigar').addEventListener('click', () => {
         .from("bottraderDash")
         .select("data, dados")
         .order("data", { ascending: false });
-  
       if (error) return;
   
       allData = data.reduce((acc, item) => {
