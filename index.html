@@ -367,33 +367,45 @@ window.addEventListener("load", checarStatusAtivo);
     let allData = {};
   
     async function fetchData() {
-      const { data, error } = await supabase
-        .from("bottraderDash")
-        .select("data, dados")
-        .order("data", { ascending: false });
-      if (error) return;
-  
-      allData = data.reduce((acc, item) => {
-        let parsedData = item.dados;
-        if (typeof parsedData === "string") {
-          try {
-            parsedData = JSON.parse(parsedData);
-          } catch (e) {
-            parsedData = {};
-          }
-        }
-        acc[item.data] = parsedData;
-        return acc;
-      }, {});
-  
-      updateDaySelect();
-  
-      const firstDate = Object.keys(allData)[0];
-      if (firstDate) {
-        diaSelect.value = firstDate;
-        updateDashboard(firstDate);
+  const { data, error } = await supabase
+    .from("bottraderDash")
+    .select("data, dados")
+    .order("data", { ascending: false });
+
+  if (error || !data) {
+    console.error("Erro ao buscar dados:", error);
+    return;
+  }
+
+  allData = data.reduce((acc, item) => {
+    let parsedData = item.dados;
+
+    if (typeof parsedData === "string") {
+      try {
+        parsedData = JSON.parse(parsedData);
+      } catch (e) {
+        parsedData = {};
       }
     }
+
+    // garante que o valor é um objeto (e não array antigo por acidente)
+    if (Array.isArray(parsedData)) {
+      parsedData = parsedData[0] || {};
+    }
+
+    acc[item.data] = parsedData;
+    return acc;
+  }, {});
+
+  updateDaySelect();
+
+  const firstDate = Object.keys(allData)[0];
+  if (firstDate) {
+    diaSelect.value = firstDate;
+    updateDashboard(firstDate);
+  }
+}
+
   
     function updateDaySelect() {
       diaSelect.innerHTML = '';
